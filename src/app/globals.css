@@ -1,0 +1,346 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  /* FAST GUNS industrial monochrome tokens */
+  --color-ink: var(--ink);
+  --color-surface: var(--surface);
+  --color-elevated: var(--elevated);
+  --color-charcoal: var(--charcoal);
+  --color-graphite: var(--graphite);
+  --color-metal: var(--metal);
+  --color-silver: var(--silver);
+  --color-verified: var(--verified);
+  --color-alert: var(--alert);
+}
+
+/*
+ * FAST GUNS — private communications hardware.
+ * Dark-only. Black / graphite / gunmetal / brushed silver / white.
+ * High contrast, metallic highlights, deep shadows, precise borders.
+ */
+
+:root {
+  --radius: 0.75rem;
+
+  /* core palette (spec 17) */
+  --ink: #050505;
+  --background: #080808;
+  --surface: #111111;
+  --elevated: #181818;
+  --charcoal: #202020;
+  --graphite: #292929;
+  --metal: #8c8c8c;
+  --silver: #c7c7c7;
+  --verified: #c7c7c7;
+  --alert: #a32020;
+
+  /* shadcn mapping */
+  --foreground: #f4f4f4;
+  --card: #111111;
+  --card-foreground: #f4f4f4;
+  --popover: #161616;
+  --popover-foreground: #f4f4f4;
+  --primary: #c7c7c7;
+  --primary-foreground: #0a0a0a;
+  --secondary: #1c1c1c;
+  --secondary-foreground: #c7c7c7;
+  --muted: #202020;
+  --muted-foreground: #8c8c8c;
+  --accent: #232323;
+  --accent-foreground: #ededed;
+  --destructive: #a32020;
+  --destructive-foreground: #f4f4f4;
+  --border: #262626;
+  --input: #303030;
+  --ring: #8c8c8c;
+  --chart-1: #c7c7c7;
+  --chart-2: #8c8c8c;
+  --chart-3: #5a5a5a;
+  --chart-4: #3a3a3a;
+  --chart-5: #2a2a2a;
+  --sidebar: #0a0a0a;
+  --sidebar-foreground: #f4f4f4;
+  --sidebar-primary: #c7c7c7;
+  --sidebar-primary-foreground: #0a0a0a;
+  --sidebar-accent: #1c1c1c;
+  --sidebar-accent-foreground: #ededed;
+  --sidebar-border: #262626;
+  --sidebar-ring: #8c8c8c;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    color-scheme: dark;
+    background-color: var(--ink);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "ss01", "cv05";
+    overscroll-behavior-y: none;
+  }
+
+  ::selection {
+    background: rgba(199, 199, 199, 0.28);
+    color: #ffffff;
+  }
+
+  /* thin industrial scrollbars */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #2e2e2e transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: #2e2e2e;
+    border-radius: 3px;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background: #3a3a3a;
+  }
+
+  input,
+  textarea {
+    font-size: 16px; /* prevent iOS zoom on focus */
+  }
+
+  button {
+    touch-action: manipulation;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer utilities {
+  /* iOS / Android safe areas */
+  .pt-safe {
+    padding-top: max(env(safe-area-inset-top), 0.5rem);
+  }
+  .pb-safe {
+    padding-bottom: max(env(safe-area-inset-bottom), 0.5rem);
+  }
+  .mb-safe {
+    margin-bottom: env(safe-area-inset-bottom);
+  }
+  .px-safe {
+    padding-left: max(env(safe-area-inset-left), 0px);
+    padding-right: max(env(safe-area-inset-right), 0px);
+  }
+
+  /* brushed metal panel */
+  .metal-panel {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.035) 0%, rgba(255, 255, 255, 0) 38%),
+      var(--surface);
+    border: 1px solid var(--border);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.04),
+      0 8px 24px rgba(0, 0, 0, 0.45);
+  }
+
+  .metal-panel-elevated {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 42%),
+      var(--elevated);
+    border: 1px solid #303030;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.05),
+      0 12px 32px rgba(0, 0, 0, 0.55);
+  }
+
+  /* engraved silver text */
+  .metal-text {
+    background: linear-gradient(180deg, #f4f4f4 0%, #c7c7c7 45%, #8c8c8c 80%, #6f6f6f 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+  }
+
+  .engraved {
+    text-shadow:
+      0 1px 0 rgba(0, 0, 0, 0.9),
+      0 -1px 0 rgba(255, 255, 255, 0.06);
+  }
+
+  .hairline {
+    border-color: rgba(255, 255, 255, 0.07);
+  }
+
+  /* subtle film grain */
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* slow metallic shimmer for hero/emblem */
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+  .shimmer {
+    background: linear-gradient(
+      100deg,
+      #6f6f6f 0%,
+      #c7c7c7 25%,
+      #ffffff 50%,
+      #c7c7c7 75%,
+      #6f6f6f 100%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shimmer 9s linear infinite;
+  }
+
+  @keyframes breathe {
+    0%,
+    100% {
+      opacity: 0.82;
+      transform: scale(0.995);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.005);
+    }
+  }
+  .breathe {
+    animation: breathe 7s ease-in-out infinite;
+  }
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .fade-up {
+    animation: fade-up 0.28s ease-out both;
+  }
+
+  @keyframes scanline {
+    0% {
+      top: 6%;
+    }
+    50% {
+      top: 92%;
+    }
+    100% {
+      top: 6%;
+    }
+  }
+  .scanline {
+    animation: scanline 2.6s ease-in-out infinite;
+  }
+
+  @keyframes pulse-ring {
+    0% {
+      box-shadow: 0 0 0 0 rgba(199, 199, 199, 0.25);
+    }
+    70% {
+      box-shadow: 0 0 0 12px rgba(199, 199, 199, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(199, 199, 199, 0);
+    }
+  }
+  .pulse-ring {
+    animation: pulse-ring 2.2s ease-out infinite;
+  }
+
+  @keyframes spin-slow {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .spin-slow {
+    animation: spin-slow 14s linear infinite;
+  }
+}

@@ -1,0 +1,3112 @@
+====================================================================
+PROJECT: BLACKBOX — MOBILE-FIRST END-TO-END ENCRYPTED CHAT
+====================================================================
+
+You are building a production-grade, security-first, mobile-first,
+iOS-first private messaging web application.
+
+The product must feel like a private encrypted communications device
+rather than a conventional social-media/chat application.
+
+The uploaded reference image is the PRIMARY visual inspiration.
+
+IMPORTANT:
+The uploaded image contains mirrored metallic firearms, gloved hands,
+chains, gothic typography, aggressive symmetry, monochrome metal,
+darkness, high contrast, engraved details and a premium underground
+aesthetic.
+
+DO NOT literally reproduce the weapons.
+
+DO NOT create a weapon marketplace.
+DO NOT create violence-oriented functionality.
+DO NOT make the UI look like a game.
+
+Instead, translate the visual LANGUAGE into a premium cybersecurity /
+private-communications aesthetic:
+
+- black
+- graphite
+- charcoal
+- gunmetal
+- brushed silver
+- white
+- extremely high contrast
+- metallic highlights
+- gothic / engraved typography used sparingly
+- symmetrical compositions
+- hard industrial geometry
+- subtle chain/link motifs
+- secure-lock motifs
+- cryptographic visual language
+- dark premium hardware aesthetic
+- extremely polished surfaces
+- restrained reflections
+- deep shadows
+- subtle grain
+- precise borders
+- premium monochrome iconography
+
+The result should feel like:
+
+"private communications hardware designed as software."
+
+Not:
+- Discord
+- WhatsApp
+- Telegram
+- Messenger
+- generic AI chat
+- generic SaaS dashboard
+- generic crypto wallet
+- generic cybersecurity template
+
+====================================================================
+0. ABSOLUTE PRODUCT PRINCIPLES
+====================================================================
+
+SECURITY > FEATURES
+
+PRIVACY > ANALYTICS
+
+LOCAL ENCRYPTED STORAGE > SERVER STORAGE
+
+REAL CRYPTOGRAPHY > VISUAL "ENCRYPTION" CLAIMS
+
+NO FAKE SECURITY
+
+NO FAKE E2EE
+
+NO FAKE "MILITARY GRADE" CLAIMS
+
+NO FAKE CERTIFICATIONS
+
+NO FAKE SECURITY BADGES
+
+NO FAKE USER COUNTS
+
+NO FAKE ANALYTICS
+
+NO FAKE MESSAGE COUNTS
+
+NO FAKE ONLINE USERS
+
+NO FAKE ENCRYPTION STATUS
+
+NO PLACEHOLDER SECURITY IMPLEMENTATIONS
+
+If a security mechanism cannot actually be implemented correctly,
+DO NOT pretend that it has been implemented.
+
+Use mature, audited, standard cryptographic primitives and browser
+APIs wherever possible.
+
+Never invent your own cryptographic algorithm.
+
+Never invent your own encryption protocol.
+
+Never store private keys in plaintext.
+
+Never transmit plaintext messages to a server.
+
+Never send encryption keys to a server.
+
+Never create an administrator backdoor.
+
+Never create a master decryption key.
+
+Never include a hidden recovery key.
+
+Never include telemetry that captures message contents.
+
+Never log message contents.
+
+Never log private keys.
+
+Never log decrypted attachments.
+
+Never expose plaintext in URLs.
+
+Never put message contents into query parameters.
+
+Never put secrets into localStorage.
+
+====================================================================
+1. CORE PRODUCT
+====================================================================
+
+Build a mobile-first, iOS-first encrypted chat web application.
+
+Working name:
+
+BLACKBOX
+
+The branding should be minimal.
+
+The product should communicate:
+
+PRIVATE
+LOCAL
+ENCRYPTED
+DIRECT
+
+The user should be able to:
+
+1. Create a local identity.
+2. Generate cryptographic identity keys locally.
+3. Create a secure contact.
+4. Exchange identity information securely.
+5. Establish an encrypted peer-to-peer session.
+6. Send encrypted messages.
+7. Receive encrypted messages.
+8. Persist encrypted conversations locally.
+9. Close the browser.
+10. Reopen the application.
+11. Unlock the local encrypted vault.
+12. Continue reading previously stored encrypted conversations.
+13. Send new messages.
+14. Attach files/images.
+15. Encrypt attachments before transmission.
+16. Delete conversations securely from local storage.
+17. Verify another user's cryptographic identity.
+18. Detect identity-key changes.
+19. Export encrypted backup data.
+20. Import encrypted backup data.
+
+The application must be useful without requiring a conventional
+centralized message database.
+
+====================================================================
+2. SECURITY ARCHITECTURE
+====================================================================
+
+The architecture MUST follow a LOCAL-FIRST / PEER-TO-PEER model.
+
+Message content must never be stored on a central backend.
+
+Preferred architecture:
+
+CLIENT
+    |
+    +-- Local encrypted identity vault
+    |
+    +-- Local encrypted message database
+    |
+    +-- WebCrypto / mature cryptographic library
+    |
+    +-- WebRTC DataChannel
+    |
+    +-- Minimal signaling / rendezvous mechanism
+    |
+    +-- Optional STUN/TURN infrastructure
+    |
+    +-- Remote peer
+
+IMPORTANT:
+
+WebRTC requires signaling.
+
+Therefore do NOT falsely advertise:
+
+"100% backend-free"
+
+if signaling infrastructure is required.
+
+Instead architect the system so that:
+
+- signaling knows nothing about plaintext messages
+- signaling does not receive encryption keys
+- signaling does not receive message bodies
+- signaling cannot decrypt conversations
+- signaling does not store conversations
+- signaling only assists peers in finding each other / negotiating
+  connections
+- WebRTC carries the encrypted application payload
+
+If technically possible, make signaling ephemeral.
+
+Use short-lived signaling state.
+
+Delete signaling state after connection establishment.
+
+Do not build a permanent message database.
+
+====================================================================
+3. END-TO-END ENCRYPTION
+====================================================================
+
+This is the most important component.
+
+Use established cryptographic standards.
+
+DO NOT invent cryptography.
+
+The implementation should use a mature cryptographic library or
+well-reviewed browser-compatible primitives.
+
+Preferred direction:
+
+WebCrypto API for browser-native primitives where appropriate.
+
+Use modern authenticated encryption such as:
+
+AES-256-GCM
+
+or another well-established AEAD construction supported by the
+chosen cryptographic architecture.
+
+Use modern public-key cryptography for identity and key agreement.
+
+Where appropriate, use:
+
+X25519
+
+Ed25519
+
+HKDF
+
+SHA-256 / SHA-512
+
+AES-256-GCM
+
+or a mature protocol/library providing equivalent modern primitives.
+
+DO NOT simply implement a homemade "AES + RSA" chat protocol.
+
+DO NOT use insecure ECB mode.
+
+DO NOT reuse nonces.
+
+DO NOT derive keys using raw passwords directly.
+
+Use a proper password-based key derivation function for local vault
+protection, such as Argon2id where available through a trustworthy
+implementation.
+
+Use strong random values from:
+
+crypto.getRandomValues()
+
+or equivalent secure randomness.
+
+====================================================================
+4. IDENTITY MODEL
+====================================================================
+
+Every user should have a local cryptographic identity.
+
+Identity generation happens entirely on-device.
+
+Private identity keys:
+
+NEVER leave the device.
+
+NEVER enter the signaling server.
+
+NEVER enter analytics.
+
+NEVER enter URLs.
+
+NEVER enter logs.
+
+NEVER enter error-reporting systems.
+
+The public identity information may be shared.
+
+The UI should display a human-friendly identity representation.
+
+Example:
+
+BLACKBOX ID
+
+BBX-XXXX-XXXX-XXXX
+
+But this must be derived from cryptographic identity information,
+not randomly generated cosmetic IDs.
+
+Provide:
+
+- public identity fingerprint
+- verification status
+- key creation date
+- identity name
+- avatar generated locally if desired
+
+====================================================================
+5. CONTACT VERIFICATION
+====================================================================
+
+Users must be able to verify contacts.
+
+Provide a dedicated:
+
+VERIFY IDENTITY
+
+screen.
+
+Show:
+
+YOUR FINGERPRINT
+
+CONTACT FINGERPRINT
+
+MATCH / DOES NOT MATCH
+
+Allow:
+
+- QR code verification
+- copy fingerprint
+- compare fingerprint manually
+- share verification code
+- mark contact as verified
+
+Do NOT claim a contact is verified merely because a connection exists.
+
+Verification must correspond to actual cryptographic identity
+verification.
+
+If a contact's identity key changes:
+
+DISPLAY A PROMINENT SECURITY WARNING.
+
+Example:
+
+"SECURITY ALERT
+
+This contact's identity key has changed.
+
+Previous identity:
+ABCD...
+
+Current identity:
+EFGH...
+
+Do not assume this is safe until you verify the contact again."
+
+Do not silently replace trusted identity keys.
+
+====================================================================
+6. MESSAGE ENCRYPTION
+====================================================================
+
+Messages must be encrypted before they leave the device.
+
+Architecture:
+
+User types:
+
+"Hello"
+
+            ↓
+
+plaintext exists temporarily in memory
+
+            ↓
+
+message encryption
+
+            ↓
+
+ciphertext
+
+            ↓
+
+WebRTC DataChannel
+
+            ↓
+
+recipient receives ciphertext
+
+            ↓
+
+recipient decrypts locally
+
+            ↓
+
+plaintext exists locally
+
+            ↓
+
+render message
+
+The signaling layer must never receive:
+
+"Hello"
+
+It must only ever see connection metadata required for signaling.
+
+====================================================================
+7. MESSAGE PERSISTENCE
+====================================================================
+
+There must be NO centralized message database.
+
+Use local encrypted persistence.
+
+Preferred:
+
+IndexedDB
+
+or another appropriate browser-local storage mechanism.
+
+All stored message records must be encrypted.
+
+Example conceptual structure:
+
+{
+    id: encrypted/random local identifier,
+    conversationId: encrypted,
+    sender: encrypted,
+    timestamp: encrypted,
+    ciphertext: encrypted,
+    nonce: encrypted,
+    metadata: encrypted
+}
+
+Do not assume IndexedDB itself is secure.
+
+Treat IndexedDB as untrusted local storage.
+
+Encrypt sensitive values before writing them.
+
+The encryption key must not simply be stored beside the ciphertext.
+
+====================================================================
+8. LOCAL VAULT
+====================================================================
+
+Create a secure local vault.
+
+On first launch:
+
+WELCOME TO BLACKBOX
+
+"Your identity is created on this device."
+
+Then:
+
+CREATE VAULT PASSWORD
+
+The password protects the local encryption key hierarchy.
+
+Use:
+
+Argon2id
+
+or another modern password KDF through a mature implementation.
+
+Never store:
+
+raw password
+
+password hash alone as an encryption key
+
+plaintext private key
+
+plaintext recovery secret
+
+The vault should support:
+
+LOCK NOW
+
+AUTO-LOCK
+
+LOCK AFTER INACTIVITY
+
+APP BACKGROUND LOCK
+
+BROWSER REOPEN LOCK
+
+OPTIONAL BIOMETRIC/PASSKEY AUTHENTICATION where browser/device
+support permits.
+
+====================================================================
+9. RECOVERY
+====================================================================
+
+This is critical.
+
+If there is no backend holding the user's private keys, recovery must
+be designed explicitly.
+
+Provide:
+
+SECURE BACKUP
+
+Generate an encrypted backup package.
+
+The backup MUST itself be strongly encrypted.
+
+Allow:
+
+Download encrypted backup
+
+Export encrypted identity
+
+Import encrypted identity
+
+The backup should require a separate password or secure secret.
+
+NEVER upload the backup automatically.
+
+NEVER send it to a central server.
+
+Clearly warn:
+
+"If you lose your device AND your encrypted backup/recovery secret,
+your identity and locally stored messages may be unrecoverable."
+
+Do not pretend otherwise.
+
+====================================================================
+10. WEBRTC
+====================================================================
+
+Use WebRTC DataChannels for peer-to-peer communication.
+
+Configure:
+
+- encrypted transport
+- ordered reliable delivery for normal chat
+- binary transfer for encrypted attachments
+- reconnection handling
+- connection timeout
+- ICE candidate handling
+- STUN
+- optional TURN fallback
+
+WebRTC already provides transport-level encryption, but DO NOT treat
+WebRTC encryption as the application's only E2EE layer.
+
+The application layer should independently encrypt message payloads.
+
+Therefore:
+
+APPLICATION MESSAGE ENCRYPTION
++
+WEBRTC TRANSPORT ENCRYPTION
+
+The server should not possess the application-layer decryption keys.
+
+====================================================================
+11. SIGNALING
+====================================================================
+
+Build the smallest possible signaling layer.
+
+Its job is ONLY:
+
+- session negotiation
+- exchanging WebRTC offers
+- exchanging WebRTC answers
+- exchanging ICE candidates
+- ephemeral peer rendezvous
+
+It must NOT:
+
+- store messages
+- store chat history
+- store private keys
+- decrypt messages
+- inspect message bodies
+- provide message search
+- provide admin message access
+- provide conversation history
+
+Delete signaling records when no longer required.
+
+Prefer ephemeral memory / TTL-based records.
+
+If a server is unavoidable, keep it intentionally dumb.
+
+====================================================================
+12. NO DATABASE REQUIREMENT
+====================================================================
+
+Do not use:
+
+PostgreSQL for messages.
+
+MongoDB for messages.
+
+Firebase Firestore for messages.
+
+Supabase database for messages.
+
+Redis as message storage.
+
+MySQL for messages.
+
+SQLite server storage.
+
+Any centralized chat-history database.
+
+Local IndexedDB is allowed because it is device-local.
+
+If a database is required for temporary signaling infrastructure,
+it must never contain plaintext application messages or private keys.
+
+====================================================================
+13. ATTACHMENTS
+====================================================================
+
+Support:
+
+- images
+- documents
+- files
+
+Workflow:
+
+SELECT FILE
+
+        ↓
+
+read file locally
+
+        ↓
+
+encrypt locally
+
+        ↓
+
+send encrypted binary chunks
+
+        ↓
+
+recipient receives encrypted chunks
+
+        ↓
+
+recipient decrypts locally
+
+        ↓
+
+reconstruct file
+
+        ↓
+
+display/download locally
+
+Never upload plaintext files to a server.
+
+Use chunked transfer.
+
+Include:
+
+- file size
+- encrypted MIME metadata
+- encrypted filename
+
+All sensitive metadata should be encrypted wherever practical.
+
+====================================================================
+14. FORWARD SECRECY
+====================================================================
+
+Do not claim forward secrecy unless the actual protocol implements it.
+
+Prefer a mature, reviewed protocol/library that supports modern
+ratcheting and forward secrecy rather than attempting to invent one.
+
+If implementing a Signal-style protocol is outside the capabilities of
+the selected library, explicitly state this limitation in the
+security documentation.
+
+DO NOT LABEL THE PRODUCT:
+
+"Signal-level security"
+
+unless the actual implementation supports the relevant properties.
+
+====================================================================
+15. MESSAGE TYPES
+====================================================================
+
+Support:
+
+TEXT
+
+IMAGE
+
+FILE
+
+VOICE NOTE
+
+SYSTEM SECURITY EVENT
+
+SYSTEM messages must never leak sensitive cryptographic information
+unnecessarily.
+
+Example:
+
+"Connection established."
+
+"Message encrypted."
+
+"Identity verified."
+
+"Identity changed."
+
+====================================================================
+16. MESSAGE UI
+====================================================================
+
+The chat interface must be extremely clean.
+
+Mobile first.
+
+Think:
+
+private communication terminal
+
+not:
+
+social network.
+
+Structure:
+
+------------------------------------------------
+TOP BAR
+------------------------------------------------
+
+[BACK]   [CONTACT]             [LOCK]
+
+Verified indicator
+
+------------------------------------------------
+MESSAGE AREA
+------------------------------------------------
+
+                  received message
+
+sent message
+
+                  received message
+
+sent message
+
+------------------------------------------------
+COMPOSER
+------------------------------------------------
+
+[+] [Message...                         ] [SEND]
+
+------------------------------------------------
+
+Use:
+
+- dark charcoal background
+- near-black surfaces
+- silver/white typography
+- subtle grey borders
+- monochrome icons
+- very subtle metallic gradients
+- no excessive neon
+- no blue/purple AI gradients
+- no green
+- no rainbow
+- no generic glassmorphism
+
+====================================================================
+17. VISUAL DESIGN SYSTEM
+====================================================================
+
+PRIMARY:
+
+#050505
+
+BACKGROUND:
+
+#080808
+
+SURFACE:
+
+#111111
+
+SURFACE ELEVATED:
+
+#181818
+
+CHARCOAL:
+
+#202020
+
+GRAPHITE:
+
+#292929
+
+METAL:
+
+#8C8C8C
+
+SILVER:
+
+#C7C7C7
+
+WHITE:
+
+#F4F4F4
+
+PURE WHITE:
+
+#FFFFFF
+
+BORDER:
+
+#303030
+
+ERROR:
+
+Use a restrained deep red only for genuine security errors.
+
+SUCCESS:
+
+Do NOT use bright green.
+
+Use neutral white/silver verification styling.
+
+====================================================================
+18. TYPOGRAPHY
+====================================================================
+
+Primary typography:
+
+modern grotesk / premium system sans.
+
+Possible:
+
+Inter
+
+Geist
+
+SF Pro-compatible system stack
+
+Use gothic/engraved typography ONLY for:
+
+BLACKBOX logo
+
+major decorative headings
+
+special security moments
+
+Never use gothic fonts for body text.
+
+Body text must be extremely readable.
+
+Mobile readability is more important than aesthetics.
+
+====================================================================
+19. LOGO
+====================================================================
+
+Create a BLACKBOX mark inspired by the uploaded visual's:
+
+- symmetry
+- mirrored forms
+- metal
+- chains
+- industrial details
+- gothic engraving
+
+But DO NOT reproduce the weapons.
+
+Possible visual language:
+
+two mirrored abstract metallic forms
+
+forming a secure central lock / encrypted link symbol.
+
+The logo should work:
+
+- app icon
+- favicon
+- splash screen
+- navbar
+- authentication screen
+- QR verification
+- loading state
+
+Do not put the logo inside a generic rounded square unless required
+for OS icon standards.
+
+====================================================================
+20. LANDING PAGE
+====================================================================
+
+The landing page should feel like a premium privacy product.
+
+Hero:
+
+BLACKBOX
+
+PRIVATE COMMUNICATIONS.
+WITHOUT THE CENTRALIZED CHAT DATABASE.
+
+Supporting statement:
+
+"Messages are encrypted on your device and exchanged directly
+between peers whenever possible."
+
+DO NOT make false claims such as:
+
+"Impossible to hack."
+
+"100% anonymous."
+
+"Unbreakable."
+
+"Military grade."
+
+"NSA proof."
+
+"Zero metadata."
+
+Those claims are technically irresponsible.
+
+Use factual language.
+
+Hero visual:
+
+large monochrome metallic BLACKBOX symbol.
+
+Subtle rotating/animated geometry.
+
+Very slow motion.
+
+No flashy startup animations.
+
+====================================================================
+21. AUTH / ENTRY EXPERIENCE
+====================================================================
+
+There should not be conventional email/password authentication if
+doing so would require centralized account infrastructure.
+
+Instead:
+
+FIRST DEVICE
+
+CREATE IDENTITY
+
+CREATE VAULT
+
+Then:
+
+UNLOCK BLACKBOX
+
+Options:
+
+UNLOCK VAULT
+
+IMPORT ENCRYPTED BACKUP
+
+CREATE NEW IDENTITY
+
+Do not require an email address.
+
+Do not require a phone number.
+
+Do not require social login.
+
+Do not collect unnecessary personal information.
+
+====================================================================
+22. ONBOARDING
+====================================================================
+
+Step 1:
+
+CREATE YOUR IDENTITY
+
+Step 2:
+
+SECURE YOUR VAULT
+
+Step 3:
+
+SAVE YOUR BACKUP
+
+Step 4:
+
+VERIFY YOUR FIRST CONTACT
+
+Step 5:
+
+START A PRIVATE CHAT
+
+Keep onboarding extremely clear.
+
+Explain the tradeoffs of local-only persistence.
+
+====================================================================
+23. CONTACT SYSTEM
+====================================================================
+
+Contacts are local.
+
+Add contact through:
+
+SCAN QR
+
+PASTE PUBLIC ID
+
+IMPORT CONTACT
+
+SHARE INVITATION
+
+The invitation must not contain private keys.
+
+Show:
+
+Name
+
+Identity fingerprint
+
+Verification status
+
+Last connection state
+
+Do not show unnecessary analytics.
+
+====================================================================
+24. QR SYSTEM
+====================================================================
+
+Build secure QR flows.
+
+QR should be capable of representing:
+
+public identity information
+
+connection invitation
+
+verification material
+
+Do not encode:
+
+private keys
+
+vault passwords
+
+plaintext message history
+
+secret recovery passwords
+
+unless the user explicitly exports an encrypted recovery package.
+
+====================================================================
+25. CHAT LIST
+====================================================================
+
+Main navigation:
+
+CHATS
+
+CONTACTS
+
+VAULT
+
+SETTINGS
+
+The chat list must display only locally available information.
+
+Example:
+
+BLACKBOX
+
+Chats
+
+[Contact]
+Last encrypted message preview
+
+The preview itself must be stored encrypted.
+
+Unread counts must be local.
+
+No centralized unread tracking.
+
+====================================================================
+26. SECURITY CENTER
+====================================================================
+
+Create:
+
+SECURITY
+
+Sections:
+
+DEVICE IDENTITY
+
+VAULT STATUS
+
+ENCRYPTION
+
+CONTACT VERIFICATION
+
+BACKUP
+
+ACTIVE CONNECTIONS
+
+PRIVACY
+
+SECURITY LOG
+
+The security log should be local-only.
+
+Examples:
+
+"Vault created"
+
+"Identity verified"
+
+"Identity key changed"
+
+"Backup exported"
+
+"Backup imported"
+
+"Vault locked"
+
+Never log plaintext messages.
+
+====================================================================
+27. SETTINGS
+====================================================================
+
+Settings:
+
+Account / Identity
+
+Vault
+
+Auto Lock
+
+Biometric Unlock
+
+Backup
+
+Import Backup
+
+Export Identity
+
+Privacy
+
+Notifications
+
+Appearance
+
+Storage
+
+Network
+
+Security
+
+About
+
+Clear Local Data
+
+Clear Conversation
+
+Delete Identity
+
+Each destructive action requires confirmation.
+
+For:
+
+DELETE ALL DATA
+
+use a deliberate multi-step confirmation.
+
+====================================================================
+28. OFFLINE MODE
+====================================================================
+
+The application must work offline for:
+
+- opening the app
+- unlocking the vault
+- viewing local conversations
+- viewing contacts
+- viewing identity
+- managing settings
+- reading encrypted local history
+
+Sending requires an available peer/network path.
+
+Clearly display:
+
+OFFLINE
+
+CONNECTED
+
+CONNECTING
+
+SECURE CHANNEL
+
+DISCONNECTED
+
+Do not fake online status.
+
+====================================================================
+29. PWA
+====================================================================
+
+Build as a serious PWA.
+
+Support:
+
+iOS Safari
+
+Android Chrome
+
+desktop browsers
+
+Installable experience where supported.
+
+Use:
+
+manifest
+
+service worker
+
+offline shell
+
+cache strategy
+
+secure local storage
+
+Do not cache sensitive plaintext responses.
+
+Do not put message content into service-worker caches.
+
+====================================================================
+30. IOS-FIRST UX
+====================================================================
+
+Design specifically around iPhone interaction.
+
+Support:
+
+safe areas
+
+notches
+
+Dynamic Island spacing
+
+bottom navigation
+
+large touch targets
+
+thumb-friendly controls
+
+swipe-back compatible layouts
+
+keyboard-safe chat composer
+
+keyboard avoidance
+
+iOS momentum scrolling
+
+reduced motion
+
+dark mode
+
+standalone PWA mode
+
+Do not make the desktop UI first and shrink it down.
+
+Design the mobile experience first.
+
+Then scale upward.
+
+====================================================================
+31. ANDROID
+====================================================================
+
+Support Android equally well.
+
+Pay attention to:
+
+back gesture
+
+navigation bar
+
+keyboard
+
+touch targets
+
+dynamic viewport height
+
+installable PWA
+
+share sheet where available
+
+camera / QR scanning permissions
+
+====================================================================
+32. RESPONSIVE BREAKPOINTS
+====================================================================
+
+Optimize in this order:
+
+iPhone SE-class screen
+
+modern iPhone
+
+large iPhone
+
+Android phone
+
+tablet
+
+desktop
+
+large desktop
+
+The mobile interface must remain beautiful at approximately:
+
+320px width
+
+375px
+
+390px
+
+414px
+
+430px
+
+Do not allow horizontal overflow.
+
+====================================================================
+33. ACCESSIBILITY
+====================================================================
+
+Support:
+
+WCAG-conscious contrast
+
+keyboard navigation
+
+screen readers
+
+focus states
+
+reduced motion
+
+large text
+
+semantic HTML
+
+accessible buttons
+
+ARIA only when necessary.
+
+Do not sacrifice accessibility for the industrial aesthetic.
+
+====================================================================
+34. ANIMATIONS
+====================================================================
+
+Animations should feel like precision hardware.
+
+Use:
+
+slow metallic shimmer
+
+subtle lock mechanisms
+
+micro-interactions
+
+small contact connection animations
+
+QR scanning animation
+
+secure channel handshake animation
+
+message arrival animation
+
+vault locking animation
+
+Avoid:
+
+bouncy startup animations
+
+confetti
+
+excessive particles
+
+neon glows
+
+AI blobs
+
+overly flashy transitions
+
+====================================================================
+35. SECURITY UX LANGUAGE
+====================================================================
+
+Do not say:
+
+"Your messages are safe."
+
+unless describing a concrete implemented property.
+
+Prefer:
+
+"Encrypted locally before transmission."
+
+"Stored encrypted on this device."
+
+"Private key remains on this device."
+
+"Peer connection established."
+
+"Identity verified."
+
+"Identity verification required."
+
+"Encrypted backup available."
+
+====================================================================
+36. THREAT MODEL PAGE
+====================================================================
+
+Create a transparent SECURITY MODEL page.
+
+Explain:
+
+WHAT BLACKBOX PROTECTS AGAINST
+
+- centralized plaintext message storage
+- server-side message access
+- database leaks of plaintext messages
+- unauthorized access to stored plaintext conversations
+- interception of application-level plaintext
+
+WHAT BLACKBOX DOES NOT GUARANTEE
+
+- compromised device security
+- malicious browser extensions
+- screenshots
+- compromised operating systems
+- phishing
+- stolen unlocked devices
+- traffic analysis
+- complete metadata elimination
+- availability when peers are offline
+- security of third-party infrastructure
+
+This page is mandatory.
+
+Do not hide limitations.
+
+====================================================================
+37. PRIVACY MODEL
+====================================================================
+
+Do not collect unnecessary analytics.
+
+Default:
+
+NO MESSAGE ANALYTICS
+
+NO MESSAGE CONTENT TELEMETRY
+
+NO CONTACT UPLOAD
+
+NO ADDRESS BOOK UPLOAD
+
+NO TRACKING PIXELS
+
+NO AD TRACKING
+
+NO THIRD-PARTY CHAT LOGGING
+
+If analytics are included for the public landing page, isolate them
+from the private chat application and ensure they never collect
+message content or cryptographic secrets.
+
+====================================================================
+38. CSP / BROWSER SECURITY
+====================================================================
+
+Implement strong web security.
+
+Include:
+
+Content-Security-Policy
+
+Strict-Transport-Security
+
+X-Content-Type-Options
+
+Referrer-Policy
+
+Permissions-Policy
+
+Frame protections
+
+Secure cookie configuration where cookies exist
+
+No inline scripts unless strictly required.
+
+Avoid eval.
+
+Avoid unsafe-eval.
+
+Avoid unsafe-inline wherever practical.
+
+Use Subresource Integrity where appropriate.
+
+====================================================================
+39. XSS PROTECTION
+====================================================================
+
+Messages must be rendered safely.
+
+Never inject message text with:
+
+dangerouslySetInnerHTML
+
+unless content is sanitized by a carefully reviewed sanitizer and
+there is an explicit requirement.
+
+Default to normal React rendering.
+
+Escape all user-controlled strings.
+
+Treat:
+
+messages
+
+filenames
+
+contact names
+
+identities
+
+URLs
+
+QR payloads
+
+as untrusted input.
+
+====================================================================
+40. DEPENDENCY SECURITY
+====================================================================
+
+Use the smallest reasonable dependency footprint.
+
+Before adding a package ask:
+
+"Is this dependency actually necessary?"
+
+Avoid abandoned packages.
+
+Avoid unknown cryptography packages.
+
+Avoid random GitHub crypto implementations.
+
+Prefer:
+
+WebCrypto
+
+well-maintained mature libraries
+
+well-established protocols
+
+official browser APIs
+
+Pin important dependency versions.
+
+Run:
+
+pnpm audit
+
+or equivalent.
+
+Document security-sensitive dependencies.
+
+====================================================================
+41. TYPESCRIPT
+====================================================================
+
+Use:
+
+TypeScript strict mode.
+
+No:
+
+any
+
+unless explicitly justified.
+
+No ignored TypeScript errors.
+
+No hidden runtime failures.
+
+Use strong types for:
+
+EncryptedMessage
+
+Conversation
+
+Contact
+
+Identity
+
+KeyMetadata
+
+Vault
+
+EncryptedAttachment
+
+WebRTCConnection
+
+SignalingMessage
+
+VerificationState
+
+SecurityEvent
+
+====================================================================
+42. DATABASE RULE
+====================================================================
+
+DEFAULT APPLICATION:
+
+NO SERVER DATABASE FOR CHAT.
+
+LOCAL:
+
+IndexedDB
+
+SERVER:
+
+optional ephemeral signaling state only.
+
+If you absolutely require persistence on a backend for some non-message
+system function, document precisely:
+
+WHAT IS STORED
+
+WHY IT IS STORED
+
+HOW LONG IT EXISTS
+
+WHO CAN ACCESS IT
+
+WHAT ENCRYPTION APPLIES
+
+But never introduce a centralized plaintext message database.
+
+====================================================================
+43. PROJECT STRUCTURE
+====================================================================
+
+Use a clean architecture similar to:
+
+src/
+  app/
+  components/
+  features/
+    chat/
+    contacts/
+    identity/
+    vault/
+    backup/
+    verification/
+    settings/
+    security/
+    signaling/
+    webrtc/
+  crypto/
+  storage/
+  services/
+  hooks/
+  lib/
+  types/
+  styles/
+
+Crypto logic must be isolated from UI.
+
+Storage logic must be isolated from UI.
+
+Networking must be isolated from UI.
+
+Never place cryptographic implementation directly inside React
+components.
+
+====================================================================
+44. CRYPTO MODULE
+====================================================================
+
+Create a dedicated cryptography abstraction.
+
+Example conceptual API:
+
+createIdentity()
+
+generateKeyPair()
+
+deriveVaultKey()
+
+encryptVault()
+
+decryptVault()
+
+encryptMessage()
+
+decryptMessage()
+
+encryptAttachment()
+
+decryptAttachment()
+
+deriveSessionKey()
+
+generateNonce()
+
+verifyIdentity()
+
+fingerprintIdentity()
+
+rotateKeys()
+
+Do not expose raw private keys to UI components.
+
+====================================================================
+45. STORAGE MODULE
+====================================================================
+
+Create:
+
+EncryptedStorage
+
+with methods such as:
+
+put()
+
+get()
+
+delete()
+
+list()
+
+clear()
+
+All sensitive data must pass through encryption before persistence.
+
+The UI must never directly manipulate raw IndexedDB records.
+
+====================================================================
+46. NETWORK MODULE
+====================================================================
+
+Create:
+
+PeerConnection
+
+SignalingClient
+
+ConnectionManager
+
+EncryptedTransport
+
+Responsibilities must be separated.
+
+The chat feature should not care whether transport is:
+
+WebRTC
+
+future transport
+
+or another supported secure channel.
+
+====================================================================
+47. TESTING
+====================================================================
+
+Write real tests.
+
+Minimum security tests:
+
+1. Encryption/decryption round trip.
+
+2. Wrong key cannot decrypt.
+
+3. Modified ciphertext fails authentication.
+
+4. Modified nonce fails.
+
+5. Message persistence contains no plaintext.
+
+6. Private keys never appear in exported logs.
+
+7. Private keys never appear in network payloads.
+
+8. Signaling payload contains no message plaintext.
+
+9. Identity verification detects changed keys.
+
+10. Encrypted backup can be restored.
+
+11. Wrong backup password fails.
+
+12. Deleted local conversation cannot be read through normal storage
+    APIs.
+
+13. Attachment encryption/decryption works.
+
+14. Large attachment chunking works.
+
+15. Offline vault unlock works.
+
+16. Locking clears sensitive in-memory state where practical.
+
+17. XSS payloads render as text.
+
+18. Invalid QR payloads are rejected.
+
+====================================================================
+48. SECURITY TESTING
+====================================================================
+
+Create automated checks that scan the project for:
+
+console.log(privateKey)
+
+console.log(password)
+
+console.log(message)
+
+fetch(...plaintextMessage...)
+
+localStorage.setItem(...privateKey...)
+
+localStorage.setItem(...message...)
+
+database message writes
+
+plaintext signaling payloads
+
+hardcoded secrets
+
+API keys
+
+private keys
+
+test passwords
+
+Do not ship secrets.
+
+====================================================================
+49. NETWORK INSPECTION TEST
+====================================================================
+
+Create a development test mode that allows the developer to inspect
+what the signaling service receives.
+
+The expected result:
+
+NO PLAINTEXT MESSAGE CONTENT
+
+NO PRIVATE KEYS
+
+NO VAULT PASSWORDS
+
+NO DECRYPTION KEYS
+
+Only signaling information.
+
+Document this test.
+
+====================================================================
+50. LOCAL STORAGE INSPECTION TEST
+====================================================================
+
+Inspect IndexedDB.
+
+Expected:
+
+ciphertext
+
+encrypted metadata
+
+encrypted message content
+
+not:
+
+"Hello, how are you?"
+
+not:
+
+plaintext filenames
+
+not:
+
+plaintext private keys
+
+not:
+
+vault password
+
+====================================================================
+51. CHAT UX DETAILS
+====================================================================
+
+Message bubbles should be subtle.
+
+No giant colorful bubbles.
+
+Use:
+
+received:
+
+dark graphite
+
+sent:
+
+slightly lighter graphite / silver edge
+
+Text:
+
+white / light grey
+
+Timestamp:
+
+small muted grey
+
+Verified status:
+
+small silver lock/link symbol
+
+Composer:
+
+large rounded industrial input
+
+SEND button:
+
+minimal silver/white.
+
+====================================================================
+52. EMPTY CHAT
+====================================================================
+
+When a conversation has no messages:
+
+[BLACKBOX MARK]
+
+PRIVATE CHANNEL
+
+Messages are encrypted locally before transmission.
+
+No message history exists yet.
+
+[START SECURE CHAT]
+
+====================================================================
+53. SECURITY HANDSHAKE
+====================================================================
+
+When connecting:
+
+ESTABLISHING SECURE CHANNEL
+
+Generating session...
+
+Negotiating peer...
+
+Verifying identity...
+
+ENCRYPTED CHANNEL READY
+
+Do not use fake progress bars.
+
+These statuses must correspond to real application states.
+
+====================================================================
+54. CONNECTION STATES
+====================================================================
+
+Use exact states:
+
+OFFLINE
+
+DISCOVERING PEER
+
+CONNECTING
+
+CONNECTED
+
+IDENTITY UNVERIFIED
+
+IDENTITY VERIFIED
+
+SECURE CHANNEL
+
+DISCONNECTED
+
+ERROR
+
+Do not show "SECURE" before the application has actually established
+the required cryptographic state.
+
+====================================================================
+55. ERROR HANDLING
+====================================================================
+
+Errors should never expose secrets.
+
+Bad:
+
+"Failed to decrypt message using key
+abc123..."
+
+Good:
+
+"Unable to decrypt this message."
+
+Developer-only diagnostics can contain technical information but must
+still avoid secrets.
+
+====================================================================
+56. NO AI
+====================================================================
+
+Do NOT add:
+
+AI assistant
+
+AI chat
+
+AI summaries
+
+AI message generation
+
+AI moderation
+
+AI sentiment analysis
+
+unless explicitly requested later.
+
+This is a secure communications product.
+
+Do not turn it into an AI application.
+
+====================================================================
+57. NO SOCIAL FEATURES
+====================================================================
+
+Do not add:
+
+likes
+
+followers
+
+stories
+
+public profiles
+
+feeds
+
+comments
+
+reactions unless genuinely necessary
+
+trending
+
+discovery
+
+public groups
+
+advertising
+
+The product is intentionally private.
+
+====================================================================
+58. PERFORMANCE
+====================================================================
+
+Optimize for low-end Android devices and older iPhones.
+
+Avoid:
+
+huge JS bundles
+
+unnecessary animation libraries
+
+large image assets
+
+heavy background processes
+
+constant polling
+
+unnecessary WebSocket connections
+
+Use:
+
+lazy loading
+
+code splitting
+
+efficient IndexedDB access
+
+Web Workers for computationally expensive cryptographic operations
+where appropriate.
+
+====================================================================
+59. PWA SECURITY
+====================================================================
+
+Be careful with service-worker caching.
+
+NEVER cache:
+
+plaintext messages
+
+private keys
+
+vault passwords
+
+decrypted attachments
+
+session secrets
+
+Only cache:
+
+static application assets
+
+non-sensitive public assets
+
+The app shell.
+
+====================================================================
+60. VISUAL DETAILS FROM THE REFERENCE
+====================================================================
+
+Use the uploaded image as visual inspiration for:
+
+1. Symmetry
+
+2. Metallic material
+
+3. Monochrome palette
+
+4. Black negative space
+
+5. High contrast
+
+6. Engraved details
+
+7. Gothic influence
+
+8. Industrial precision
+
+9. Layered depth
+
+10. Premium hardware feeling
+
+11. Mirrored visual balance
+
+12. Chain/link symbolism
+
+13. Centralized emblem compositions
+
+Translate these into:
+
+- encrypted links
+- cryptographic chains
+- secure locks
+- mirrored shields
+- metallic identity cards
+- encrypted message capsules
+- verification rings
+- secure-channel indicators
+
+Do NOT copy the exact artwork.
+
+Do NOT use guns.
+
+Do NOT use hands.
+
+Do NOT use violence imagery.
+
+====================================================================
+61. MOBILE NAVIGATION
+====================================================================
+
+Bottom navigation:
+
+CHATS
+
+CONTACTS
+
+SECURITY
+
+SETTINGS
+
+The current tab should use a subtle silver highlight.
+
+No bright colored active states.
+
+====================================================================
+62. DESKTOP NAVIGATION
+====================================================================
+
+Desktop:
+
+left sidebar
+
+center conversation
+
+optional right security/contact panel
+
+Example:
+
+---------------------------------------------------------------
+BLACKBOX
+---------------------------------------------------------------
+CHATS
+CONTACTS
+SECURITY
+SETTINGS
+
+---------------------------------------------------------------
+CONTACT
+Verified
+
+Messages...
+
+---------------------------------------------------------------
+SECURITY
+Identity Verified
+Encrypted Channel
+---------------------------------------------------------------
+
+But the desktop design must never compromise the mobile layout.
+
+====================================================================
+63. DESIGN LANGUAGE
+====================================================================
+
+Every component should feel intentionally designed.
+
+Use:
+
+large rounded corners where appropriate
+
+precise spacing
+
+thin borders
+
+soft shadows
+
+metallic highlights
+
+deep blacks
+
+subtle gradients
+
+small micro-details
+
+No:
+
+default Tailwind cards
+
+generic dashboard widgets
+
+template-looking layouts
+
+rainbow gradients
+
+purple AI gradients
+
+giant meaningless statistics
+
+"Trusted by 10,000 users"
+
+"99.99% uptime"
+
+fake testimonials
+
+fake security scores
+
+fake reviews
+
+fake activity feeds
+
+====================================================================
+64. BRAND VOICE
+====================================================================
+
+Short.
+
+Confident.
+
+Technical.
+
+Calm.
+
+Private.
+
+Examples:
+
+"Private by architecture."
+
+"Your keys stay yours."
+
+"Encrypted before transmission."
+
+"Verify before you trust."
+
+"Nothing to browse. Nothing to sell."
+
+Avoid exaggerated cybersecurity marketing.
+
+====================================================================
+65. REQUIRED SCREENS
+====================================================================
+
+Build all of these:
+
+1. Landing
+
+2. Create Identity
+
+3. Create Vault
+
+4. Backup Identity
+
+5. Unlock Vault
+
+6. Import Backup
+
+7. Home / Chats
+
+8. New Chat
+
+9. Contact Details
+
+10. QR Scanner
+
+11. QR Identity Display
+
+12. Identity Verification
+
+13. Chat
+
+14. Attachment Picker
+
+15. Security Handshake
+
+16. Security Center
+
+17. Device Identity
+
+18. Vault Settings
+
+19. Backup Settings
+
+20. Privacy Settings
+
+21. Network Settings
+
+22. Appearance Settings
+
+23. Security Log
+
+24. Threat Model
+
+25. About
+
+26. Delete Data Confirmation
+
+27. Locked State
+
+28. Offline State
+
+29. Connection Error
+
+30. Identity Changed Warning
+
+====================================================================
+66. SECURITY-CRITICAL UI RULE
+====================================================================
+
+Never allow visual design to imply a security state that does not
+actually exist.
+
+For example:
+
+DO NOT display:
+
+LOCKED
+
+if the vault is not actually locked.
+
+DO NOT display:
+
+VERIFIED
+
+if identity verification has not occurred.
+
+DO NOT display:
+
+E2EE
+
+if the actual encryption layer has not been established.
+
+DO NOT display:
+
+SECURE CHANNEL
+
+before the cryptographic channel is established.
+
+UI state must be driven by real security state.
+
+====================================================================
+67. BUILD STACK
+====================================================================
+
+Preferred:
+
+Next.js
+
+React
+
+TypeScript
+
+Tailwind CSS
+
+WebCrypto
+
+IndexedDB
+
+WebRTC
+
+PWA
+
+Use a mature cryptographic library where WebCrypto alone is not
+sufficient.
+
+Use Web Workers for heavy crypto operations where appropriate.
+
+Use modern browser APIs.
+
+No SQLite server.
+
+No Firebase chat database.
+
+No Supabase chat database.
+
+No MongoDB chat database.
+
+No plaintext cloud persistence.
+
+====================================================================
+68. BACKEND
+====================================================================
+
+Backend should be extremely small.
+
+ONLY support:
+
+signaling / rendezvous
+
+health endpoint if necessary
+
+configuration if necessary
+
+No message API.
+
+No:
+
+POST /messages
+
+GET /messages
+
+DELETE /messages
+
+GET /conversation
+
+GET /history
+
+There should be no centralized chat-history API.
+
+====================================================================
+69. ENVIRONMENT VARIABLES
+====================================================================
+
+Never hardcode secrets.
+
+Use:
+
+.env.local
+
+environment variables
+
+server-side secret handling where applicable.
+
+Public client configuration must never contain private secrets.
+
+Document every required environment variable.
+
+====================================================================
+70. DEPLOYMENT
+====================================================================
+
+The application must be deployable as a modern web application.
+
+Recommended:
+
+Vercel / Netlify / Cloudflare Pages for frontend
+
+Minimal server / edge infrastructure for signaling
+
+TURN provider only if necessary.
+
+The deployment architecture must preserve the privacy model.
+
+Do not introduce a backend database simply because the hosting
+platform makes it convenient.
+
+====================================================================
+71. README
+====================================================================
+
+Write a serious README.
+
+Include:
+
+Overview
+
+Architecture
+
+Threat Model
+
+Encryption Model
+
+Identity Model
+
+Key Management
+
+Local Storage
+
+WebRTC
+
+Signaling
+
+Backup / Recovery
+
+Privacy
+
+Known Limitations
+
+Browser Compatibility
+
+iOS Support
+
+Android Support
+
+Deployment
+
+Development
+
+Testing
+
+Security Reporting
+
+Do not market the product as independently audited unless it actually
+has been audited.
+
+====================================================================
+72. SECURITY DOCUMENTATION
+====================================================================
+
+Create:
+
+SECURITY.md
+
+Include:
+
+responsible disclosure process
+
+security architecture
+
+known limitations
+
+dependency policy
+
+cryptographic assumptions
+
+threat model
+
+recovery limitations
+
+device compromise limitations
+
+metadata limitations
+
+====================================================================
+73. IMPLEMENTATION ORDER
+====================================================================
+
+Build in this order.
+
+PHASE 1
+Design system.
+
+PHASE 2
+Mobile shell.
+
+PHASE 3
+Identity generation.
+
+PHASE 4
+Vault encryption.
+
+PHASE 5
+Encrypted IndexedDB.
+
+PHASE 6
+Contact identity model.
+
+PHASE 7
+QR identity exchange.
+
+PHASE 8
+Identity verification.
+
+PHASE 9
+WebRTC transport.
+
+PHASE 10
+Minimal signaling.
+
+PHASE 11
+Application-layer message encryption.
+
+PHASE 12
+Persistent encrypted conversations.
+
+PHASE 13
+Attachments.
+
+PHASE 14
+Backup/recovery.
+
+PHASE 15
+Security center.
+
+PHASE 16
+Threat model.
+
+PHASE 17
+PWA.
+
+PHASE 18
+iOS optimization.
+
+PHASE 19
+Android optimization.
+
+PHASE 20
+Desktop optimization.
+
+PHASE 21
+Security testing.
+
+PHASE 22
+Performance testing.
+
+PHASE 23
+Production hardening.
+
+====================================================================
+74. ZERO PLACEHOLDER RULE
+====================================================================
+
+Do not finish with fake implementations.
+
+Forbidden:
+
+encryptMessage() {
+    return message;
+}
+
+verifyIdentity() {
+    return true;
+}
+
+isSecure = true
+
+fake encryption icons
+
+fake WebRTC connections
+
+fake "verified" states
+
+fake local encryption
+
+fake backups
+
+fake security logs
+
+fake online presence
+
+fake message delivery
+
+fake persistent chat
+
+If a feature cannot be completed safely, implement the secure
+foundation and mark the feature honestly as unavailable.
+
+Never simulate security.
+
+====================================================================
+75. FINAL VALIDATION
+====================================================================
+
+Before declaring completion:
+
+Run:
+
+typecheck
+
+lint
+
+unit tests
+
+integration tests
+
+production build
+
+dependency audit
+
+security scan
+
+PWA validation
+
+mobile viewport testing
+
+iOS Safari testing
+
+Android Chrome testing
+
+desktop testing
+
+WebRTC connection testing
+
+offline testing
+
+vault lock/unlock testing
+
+backup restore testing
+
+identity verification testing
+
+ciphertext tampering testing
+
+attachment encryption testing
+
+XSS testing
+
+storage inspection
+
+network inspection
+
+Verify that plaintext message contents never reach:
+
+server
+
+signaling
+
+database
+
+analytics
+
+logs
+
+URLs
+
+localStorage
+
+service-worker cache
+
+====================================================================
+76. FINAL SECURITY AUDIT QUESTIONS
+====================================================================
+
+Before completion answer these questions in the README:
+
+1. Can the signaling server decrypt messages?
+
+2. Can the signaling server retrieve chat history?
+
+3. Can the frontend hosting provider retrieve messages?
+
+4. Can a database administrator read messages?
+
+5. Where are private keys stored?
+
+6. Where are message keys stored?
+
+7. How are local messages encrypted?
+
+8. How are backups encrypted?
+
+9. What happens when the identity key changes?
+
+10. What happens when the device is compromised?
+
+11. What metadata can the network observe?
+
+12. What happens when both peers are offline?
+
+13. How does NAT traversal work?
+
+14. What happens if TURN is used?
+
+15. What happens if the vault password is forgotten?
+
+16. What happens if the device is lost?
+
+17. What happens if the browser storage is cleared?
+
+18. Does deleting a message actually remove its local ciphertext?
+
+19. Can message plaintext appear in logs?
+
+20. Can private keys appear in logs?
+
+21. What cryptographic libraries are being used?
+
+22. Which security properties are actually guaranteed?
+
+23. Which security properties are NOT guaranteed?
+
+====================================================================
+77. MOST IMPORTANT ARCHITECTURAL REQUIREMENT
+====================================================================
+
+DO NOT optimize for the appearance of security.
+
+Optimize for actual security.
+
+The application must be designed around this principle:
+
+                    USER DEVICE
+                         |
+               ┌─────────┴─────────┐
+               │                   │
+        LOCAL IDENTITY       LOCAL ENCRYPTED
+        PRIVATE KEY          MESSAGE VAULT
+               │                   │
+               └─────────┬─────────┘
+                         │
+                  APPLICATION
+                   ENCRYPTION
+                         │
+                     CIPHERTEXT
+                         │
+                    WEBRTC P2P
+                         │
+                ┌────────┴────────┐
+                │                 │
+             USER A            USER B
+                │                 │
+         decrypt locally    decrypt locally
+
+SIGNALING:
+
+       ONLY CONNECTION NEGOTIATION
+
+       NO MESSAGE STORAGE
+       NO PRIVATE KEYS
+       NO PLAINTEXT
+
+====================================================================
+78. FINAL PRODUCT EXPERIENCE
+====================================================================
+
+When the user opens BLACKBOX, it should feel like opening a secure
+piece of hardware.
+
+Black screen.
+
+Subtle metallic BLACKBOX emblem.
+
+Minimal typography.
+
+Unlock.
+
+The vault opens.
+
+Chats appear.
+
+No unnecessary dashboard.
+
+No advertisements.
+
+No analytics wall.
+
+No social feed.
+
+No clutter.
+
+No fake numbers.
+
+No fake security claims.
+
+Just:
+
+CHATS
+CONTACTS
+SECURITY
+SETTINGS
+
+A user creates an identity.
+
+They exchange a contact QR.
+
+They verify fingerprints.
+
+They establish a peer connection.
+
+They send:
+
+"Hello."
+
+The message is encrypted locally.
+
+Only ciphertext crosses the network.
+
+The recipient decrypts locally.
+
+The encrypted conversation persists locally.
+
+The browser closes.
+
+The user returns.
+
+The vault unlocks.
+
+The conversation remains.
+
+That is the core experience.
+
+====================================================================
+79. FINAL QUALITY BAR
+====================================================================
+
+Do not stop when the UI looks good.
+
+Do not stop when the demo works.
+
+Do not stop when two browser tabs exchange fake messages.
+
+Do not stop when encryption functions return plausible output.
+
+The final implementation must have:
+
+REAL cryptographic operations.
+
+REAL encrypted local persistence.
+
+REAL identity generation.
+
+REAL identity verification.
+
+REAL WebRTC communication.
+
+REAL encrypted payloads.
+
+REAL backup encryption.
+
+REAL security state.
+
+REAL error handling.
+
+REAL tests.
+
+REAL production build.
+
+REAL mobile UX.
+
+REAL iOS UX.
+
+REAL offline local vault.
+
+No fake security.
+
+No fake persistence.
+
+No fake E2EE.
+
+No fake backend.
+
+No fake metrics.
+
+====================================================================
+80. FINAL DELIVERABLE
+====================================================================
+
+Deliver a production-ready BLACKBOX web application with:
+
+- premium monochrome industrial visual identity
+- mobile-first architecture
+- iOS-first UX
+- Android support
+- desktop support
+- PWA
+- local encrypted vault
+- locally generated identity
+- encrypted local chat persistence
+- E2EE application-layer messages
+- WebRTC peer communication
+- minimal ephemeral signaling
+- QR contact exchange
+- identity verification
+- encrypted attachments
+- encrypted backups
+- recovery/import
+- security center
+- threat model
+- privacy controls
+- offline vault
+- security logging
+- hardened browser security
+- strong CSP
+- dependency auditing
+- comprehensive automated testing
+- production build
+- complete documentation
+
+The final visual result must feel like:
+
+A BLACK / GRAPHITE / SILVER PRIVATE COMMUNICATION DEVICE
+TRANSLATED INTO A MODERN MOBILE WEB APPLICATION.
+
+It must take the uploaded image's visual DNA —
+symmetry, metallic material, gothic precision, chains, darkness,
+high contrast and premium industrial detailing —
+without reproducing its weapons or violent imagery.
+
+Build the actual product.
+
+Do not create a mockup.
+
+Do not create a prototype pretending to be secure.
+
+Do not create fake E2EE.
+
+Do not create fake backend persistence.
+
+Build the security architecture first,
+then build the interface around it.
+
+====================================================================
+END OF BUILD SPECIFICATION
+====================================================================
