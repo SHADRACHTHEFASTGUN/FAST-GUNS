@@ -64,7 +64,7 @@
 :root {
   --radius: 0.75rem;
 
-  /* core palette (spec 17) */
+  /* core palette (spec 17) — VIOLENT EDITION pushes the blood red */
   --ink: #050505;
   --background: #080808;
   --surface: #111111;
@@ -74,7 +74,7 @@
   --metal: #8c8c8c;
   --silver: #c7c7c7;
   --verified: #c7c7c7;
-  --alert: #a32020;
+  --alert: #c81e1e;
 
   /* shadcn mapping */
   --foreground: #f4f4f4;
@@ -132,24 +132,39 @@
     color: #ffffff;
   }
 
-  /* thin industrial scrollbars */
+  /* ALL SCROLLBARS INVISIBLE — scrolling still works, chrome stays clean */
+  html {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  html::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+  body {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  body::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
   * {
-    scrollbar-width: thin;
-    scrollbar-color: #2e2e2e transparent;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
   *::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
+    display: none;
+    width: 0;
+    height: 0;
   }
   *::-webkit-scrollbar-track {
-    background: transparent;
+    display: none;
   }
   *::-webkit-scrollbar-thumb {
-    background: #2e2e2e;
-    border-radius: 3px;
-  }
-  *::-webkit-scrollbar-thumb:hover {
-    background: #3a3a3a;
+    display: none;
   }
 
   input,
@@ -342,5 +357,85 @@
   }
   .spin-slow {
     animation: spin-slow 14s linear infinite;
+  }
+
+  /* ---- VIOLENT EDITION ---- */
+
+  .blood-text {
+    background: linear-gradient(180deg, #ff4d4d 0%, #c81e1e 45%, #7a0f0f 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 2px 8px rgba(200, 30, 30, 0.35));
+  }
+
+  .blood-panel {
+    background:
+      linear-gradient(180deg, rgba(200, 30, 30, 0.09) 0%, rgba(200, 30, 30, 0) 55%),
+      var(--surface);
+    border: 1px solid rgba(200, 30, 30, 0.22);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.04),
+      0 8px 28px rgba(0, 0, 0, 0.5),
+      0 0 24px rgba(160, 20, 20, 0.07);
+  }
+
+  .blood-glow {
+    box-shadow:
+      0 0 0 1px rgba(200, 30, 30, 0.35),
+      0 0 32px rgba(180, 24, 24, 0.28),
+      0 10px 40px rgba(0, 0, 0, 0.6);
+  }
+
+  @keyframes alert-flicker {
+    0%, 100% { opacity: 0; }
+    8% { opacity: 0.5; }
+    12% { opacity: 0.1; }
+    20% { opacity: 0.65; }
+    28% { opacity: 0; }
+  }
+  .alert-flicker {
+    animation: alert-flicker 5s steps(1, end) infinite;
+  }
+
+  @keyframes marquee-left {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  .marquee-track {
+    animation: marquee-left 26s linear infinite;
+    will-change: transform;
+  }
+  .marquee-track-fast {
+    animation: marquee-left 17s linear infinite;
+    will-change: transform;
+  }
+
+  @keyframes muzzle-flash {
+    0%, 92%, 100% { opacity: 0; }
+    93% { opacity: 0.9; }
+    95% { opacity: 0.15; }
+    97% { opacity: 0.55; }
+  }
+  .muzzle-flash {
+    animation: muzzle-flash 6s linear infinite;
+  }
+
+  @keyframes hard-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.25; }
+  }
+  .hard-blink {
+    animation: hard-blink 1.1s steps(2, end) infinite;
+  }
+
+  /* tap targets stay >= 44px on touch */
+  @media (pointer: coarse) {
+    button, a, [role="button"] {
+      min-height: 44px;
+    }
+    button.min-h-none, a.min-h-none {
+      min-height: unset;
+    }
   }
 }

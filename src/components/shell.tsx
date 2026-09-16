@@ -35,8 +35,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* ---------------- desktop sidebar ---------------- */}
       <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-border/70 bg-sidebar px-4 py-5 lg:flex">
         <div className="mb-8 flex items-center gap-3 px-2">
-          <Image src="/fastguns-logo.png" alt="FAST GUNS emblem" width={34} height={34} className="rounded-md" />
-          <Wordmark />
+          <Image
+            src="/fastguns-logo.png"
+            alt="FAST GUNS emblem"
+            width={44}
+            height={44}
+            className="select-none drop-shadow-[0_6px_14px_rgba(0,0,0,0.8)]"
+          />
+          <div className="flex flex-col gap-0.5">
+            <Wordmark />
+            <span className="font-mono text-[8px] tracking-[0.3em] text-alert uppercase">
+              Moer die spyware
+            </span>
+          </div>
         </div>
         <nav className="flex flex-col gap-1" aria-label="Primary">
           {TABS.map((t) => (
@@ -84,15 +95,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <Image
               src="/fastguns-logo.png"
               alt="FAST GUNS emblem"
-              width={28}
-              height={28}
-              className="rounded-md lg:hidden"
+              width={38}
+              height={38}
+              className="select-none drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)] lg:hidden"
             />
-            <span className="font-mono text-[11px] font-semibold tracking-[0.28em] text-silver uppercase lg:hidden">
+            <span className="font-mono text-[12px] font-semibold tracking-[0.26em] text-silver uppercase lg:hidden">
               Fast Guns
             </span>
             <span className="hidden font-mono text-[10px] tracking-[0.26em] text-metal uppercase lg:block">
-              Fast Guns · Encrypted Communications
+              Fast Guns · <span className="text-alert">Moer die spyware</span>
             </span>
           </div>
           <div className="flex items-center gap-2 py-3 lg:py-0">
@@ -116,7 +127,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
         {/* bottom nav (mobile) */}
         <nav
-          className="fixed inset-x-0 bottom-0 z-30 border-t border-border/70 bg-ink/95 backdrop-blur-sm lg:hidden"
+          className="fixed inset-x-0 bottom-0 z-30 border-t border-border/70 bg-ink/95 backdrop-blur-md lg:hidden"
           aria-label="Primary"
         >
           <ul className="mx-auto grid max-w-md grid-cols-4 px-2 pb-safe">

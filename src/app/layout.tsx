@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 const APP_NAME = "FAST GUNS";
 const APP_DESCRIPTION =
-  "FAST GUNS — private, end-to-end encrypted communications. Identity and keys are generated on your device. Messages are encrypted locally before transmission and exchanged directly between peers. No centralized message database.";
+  "FAST GUNS — end-to-end encrypted comms wat jou nie verkoop nie. Geen rekenings, geen nommers, geen sentrale database, geen kak. Jou chats bly jou ne.";
 
 export const metadata: Metadata = {
   title: {
