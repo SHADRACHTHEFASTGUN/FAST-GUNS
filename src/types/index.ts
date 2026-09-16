@@ -250,3 +250,35 @@ export interface BackupPayload {
   securityLog: SecurityEvent[];
   exportedAt: number;
 }
+
+/* ------------------------------------------------------------------ */
+/* WANTED board — encrypted wanted posters with media                  */
+/* ------------------------------------------------------------------ */
+
+export type WantedStatus = "on-the-loose" | "seen" | "caught";
+
+/** Reference to a per-file-encrypted photo or video blob in local storage. */
+export interface WantedMediaRef {
+  id: string;
+  name: string;
+  mime: string;
+  size: number;
+  kind: "image" | "video";
+  /** per-file AES-256-GCM key material — stored ONLY inside this DEK-sealed record */
+  keyB64: string;
+  ivB64: string;
+}
+
+/** A wanted poster. The whole record is sealed with the vault DEK at rest. */
+export interface WantedPoster {
+  id: string;
+  alias: string;
+  bounty: string;
+  crime: string;
+  notes: string;
+  status: WantedStatus;
+  createdAt: number;
+  updatedAt: number;
+  image?: WantedMediaRef;
+  video?: WantedMediaRef;
+}

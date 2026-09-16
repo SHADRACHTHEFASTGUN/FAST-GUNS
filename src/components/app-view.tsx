@@ -19,6 +19,7 @@ import { ChatView } from "@/components/chat";
 import { Contacts, ContactDetail, VerifyIdentity, DeviceIdentityCard } from "@/components/contacts";
 import { About, SecurityCenter, SecurityLog, ThreatModel } from "@/components/security";
 import { BackupOverlay, Settings } from "@/components/settings";
+import { WantedBoard } from "@/components/wanted";
 import { BackupImportDialog } from "@/components/recovery-import";
 import { ServiceWorkerRegistration } from "@/components/sw-registration";
 import { Button } from "@/components/ui/button";
@@ -95,6 +96,7 @@ function AppPhase({
     <>
       <AppShell>
         {tab === "chats" ? <ChatList /> : null}
+        {tab === "wanted" ? <WantedBoard /> : null}
         {tab === "contacts" ? <Contacts /> : null}
         {tab === "security" ? <SecurityCenter /> : null}
         {tab === "settings" ? <Settings /> : null}
@@ -214,18 +216,21 @@ function BootSplash() {
           <Image
             src="/fastguns-logo.png"
             alt="FAST GUNS"
-            width={104}
-            height={104}
-            className="rounded-xl border border-white/5 drop-shadow-[0_20px_40px_rgba(0,0,0,0.8)]"
+            width={168}
+            height={168}
+            className="select-none drop-shadow-[0_28px_56px_rgba(0,0,0,0.9)]"
             priority
           />
         </div>
-        <div className="mt-6">
+        <div className="mt-8">
           <Wordmark />
         </div>
-        <p className="mt-2 font-mono text-[9px] tracking-[0.3em] text-metal uppercase">
+        <p className="mt-3 font-mono text-[9px] tracking-[0.32em] text-metal uppercase">
           Secure communications device
         </p>
+        <div className="mt-6 h-px w-24 overflow-hidden bg-charcoal">
+          <div className="hard-blink h-full w-1/3 bg-alert" />
+        </div>
       </div>
     </div>
   );

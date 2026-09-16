@@ -1,15 +1,16 @@
 "use client";
 
 /**
- * FAST GUNS — VIOLENT EDITION landing.
- * Huge transparent emblem, GSAP slams + screen shake + scroll chaos,
- * and language with absolutely zero manners. Still honest about security.
+ * FAST GUNS — VIOLENT EDITION landing / splash.
+ * Full-screen cinematic hero with the huge transparent emblem, GSAP motion,
+ * hacker-grade spec strip, and an encrypted WANTED-board teaser.
+ * Clean of decorative lines/scanlines — motion carries the drama.
  */
 
 import { useLayoutEffect, useRef } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { ShieldCheck, KeyRound, Lock, Users, ArrowDown, Crosshair } from "lucide-react";
+import { ShieldCheck, KeyRound, Lock, Users, ArrowDown, Crosshair, Skull, MessagesSquare, FolderLock } from "lucide-react";
 import { useAppStore } from "@/store/app-store";
 import { VignetteBackdrop, Wordmark } from "@/components/common";
 import { HeroEmblem, SlamText, Reveal, ParallaxGhost, usePunch } from "@/components/fx";
@@ -46,6 +47,27 @@ const FEATURES = [
   },
 ];
 
+const STEPS = [
+  {
+    icon: KeyRound,
+    n: "01",
+    title: "SMEE",
+    body: "Skep jou identity op die toestel. ECDH + ECDSA P-256, 600 000 PBKDF2-rondes. 30 sekondes, geen vrae nie.",
+  },
+  {
+    icon: FolderLock,
+    n: "02",
+    title: "SLOT",
+    body: "Alles wat jy skryf, stuur of plaas gaan in die AES-256-GCM kluis. Net ciphertext raak die skyf — ooit.",
+  },
+  {
+    icon: MessagesSquare,
+    n: "03",
+    title: "SKIET",
+    body: "Gesels direk oor WebRTC. Verifieer vingerafdrukke, plak wanted-posters, moer die spyware vir altyd.",
+  },
+];
+
 const SPECS = [
   "AES-256-GCM",
   "ECDH P-256",
@@ -70,10 +92,7 @@ const MARQUEE = [
 function Marquee({ fast = false }: { fast?: boolean }) {
   const row = MARQUEE.join("  ✕  ") + "  ✕  ";
   return (
-    <div
-      aria-hidden
-      className="relative overflow-hidden border-y border-alert/25 bg-[linear-gradient(180deg,#170404,#1d0606_50%,#170404)] py-3"
-    >
+    <div aria-hidden className="relative overflow-hidden bg-[linear-gradient(180deg,#120303,#180505_50%,#120303)] py-3.5">
       <div className={fast ? "marquee-track-fast flex w-max" : "marquee-track flex w-max"}>
         <span className="pr-10 font-mono text-[11px] font-bold tracking-[0.3em] text-alert/90 uppercase whitespace-nowrap">
           {row}
@@ -130,7 +149,7 @@ function SlamTitle() {
     <h1
       ref={ref}
       aria-label="FAST GUNS"
-      className="font-mono text-[44px] font-bold tracking-[0.18em] uppercase sm:text-7xl lg:text-8xl"
+      className="font-mono text-[46px] font-bold tracking-[0.16em] uppercase sm:text-7xl lg:text-8xl"
     >
       {"FAST GUNS".split("").map((ch, i) => (
         <span
@@ -164,71 +183,65 @@ export function Landing() {
       <VignetteBackdrop />
 
       {/* ---------------- header ---------------- */}
-      <header className="relative z-10 flex items-center justify-between px-5 pt-safe sm:px-8">
+      <header className="relative z-10 mx-auto flex w-full max-w-5xl items-center justify-between px-5 pt-safe sm:px-8">
         <div className="flex items-center gap-3 py-4">
           <Image
             src="/fastguns-logo.png"
             alt="FAST GUNS emblem"
-            width={44}
-            height={44}
+            width={48}
+            height={48}
             className="select-none drop-shadow-[0_6px_16px_rgba(0,0,0,0.8)]"
             priority
           />
           <Wordmark />
         </div>
-        <span className="hidden font-mono text-[10px] tracking-[0.28em] text-metal uppercase sm:block">
-          Enkripte komms · <span className="text-alert">moer die res</span>
-        </span>
+        <div className="flex items-center gap-4">
+          <span className="hidden font-mono text-[10px] tracking-[0.28em] text-metal uppercase md:block">
+            Enkripte komms · <span className="text-alert">moer die res</span>
+          </span>
+          <Button
+            size="sm"
+            onClick={handleStart}
+            className="h-10 rounded-lg bg-alert font-mono text-[10px] font-bold tracking-[0.2em] text-white uppercase hover:bg-[#a51515]"
+          >
+            Skakel aan
+          </Button>
+        </div>
       </header>
 
-      <main className="relative z-10 mx-auto flex w-full max-w-4xl flex-1 flex-col px-5 sm:px-8">
-        {/* ---------------- hero ---------------- */}
-        <section className="relative flex min-h-[calc(100svh-72px)] flex-col items-center justify-center pb-10 pt-6 text-center sm:pt-4">
-          {/* red muzzle-flash ambience */}
-          <div
-            aria-hidden
-            className="muzzle-flash pointer-events-none absolute inset-x-0 top-[-10%] h-[46%]"
-            style={{
-              background:
-                "radial-gradient(ellipse 55% 100% at 50% 0%, rgba(200,30,30,0.16) 0%, transparent 70%)",
-            }}
-          />
-          <div
-            aria-hidden
-            className="scanline pointer-events-none absolute inset-x-0 h-px bg-alert/20"
-          />
-
-          <HeroEmblem className="mb-6 sm:mb-8">
+      <main className="relative z-10 mx-auto flex w-full max-w-5xl flex-1 flex-col px-5 sm:px-8">
+        {/* ---------------- SPLASH HERO ---------------- */}
+        <section className="relative flex min-h-[calc(100svh-80px)] flex-col items-center justify-center pb-8 pt-2 text-center sm:pt-0">
+          <HeroEmblem className="mb-5 sm:mb-7">
             <Image
               src="/fastguns-logo.png"
               alt="FAST GUNS — twee handschoene, twee pistole, kettings"
               width={1024}
               height={1024}
               priority
-              className="w-[min(76vw,340px)] select-none drop-shadow-[0_30px_60px_rgba(0,0,0,0.85)] sm:w-[min(52vw,420px)]"
+              className="w-[min(80vw,400px)] select-none drop-shadow-[0_34px_70px_rgba(0,0,0,0.9)] sm:w-[min(54vw,540px)]"
             />
           </HeroEmblem>
 
           <SlamTitle />
 
-          <p className="hard-blink mt-5 font-mono text-[15px] font-bold tracking-[0.24em] uppercase sm:text-lg">
+          <p className="hard-blink mt-4 font-mono text-[15px] font-bold tracking-[0.24em] uppercase sm:mt-5 sm:text-lg">
             <span className="blood-text">Moer die spyware.</span>
           </p>
 
-          <div className="mt-6 max-w-xl space-y-3">
-            <p className="text-[15px] leading-relaxed text-foreground/90">
+          <div className="mt-5 grid max-w-2xl gap-3 sm:mt-6">
+            <p className="text-[15px] leading-relaxed text-foreground/90 sm:text-[16px]">
               WhatsApp lees jou kak. Instagram verkoop jou saam met jou gatte.
               Hier boet — jou geselsies bly <span className="font-semibold text-silver">JOU FOKKEN besigheid</span>.
             </p>
-            <p className="text-[13px] leading-relaxed text-muted-foreground">
+            <p className="mx-auto max-w-xl text-[13px] leading-relaxed text-muted-foreground">
               Boodskappe word op jou yster gesmeer met AES-256-GCM en vlieg reguit
               oor WebRTC na die ander man se yster. Geen poephool in die middel wat
-              kan luister nie. Dis versleutel voor dit uitgaan, en dit bly
-              versleutel waar dit lê.
+              kan luister nie. Versleutel voor dit uitgaan. Versluit waar dit lê.
             </p>
           </div>
 
-          <div className="mt-9 flex w-full flex-col items-center gap-3 sm:w-auto sm:flex-row">
+          <div className="mt-8 flex w-full flex-col items-center gap-3 sm:w-auto sm:flex-row">
             <Button
               size="lg"
               onClick={handleStart}
@@ -255,7 +268,7 @@ export function Landing() {
 
           <a
             href="#die-feite"
-            className="mt-10 inline-flex flex-col items-center gap-1 font-mono text-[10px] tracking-[0.3em] text-muted-foreground uppercase transition-colors hover:text-alert"
+            className="mt-8 inline-flex flex-col items-center gap-1 font-mono text-[10px] tracking-[0.3em] text-muted-foreground uppercase transition-colors hover:text-alert sm:mt-10"
           >
             Hoekom dit moer werd is
             <ArrowDown className="size-4 animate-bounce text-alert" />
@@ -296,8 +309,33 @@ export function Landing() {
           </Reveal>
         </section>
 
+        {/* ---------------- how it werk ---------------- */}
+        <section className="pb-20 sm:pb-24">
+          <SlamText
+            lines={["HOE DIT WERK"]}
+            className="mb-8 text-center"
+            lineClassName="font-mono text-lg font-bold tracking-[0.24em] text-silver uppercase sm:text-2xl"
+          />
+          <div className="grid gap-4 md:grid-cols-3">
+            {STEPS.map((s) => (
+              <Reveal key={s.n} from="up" rotate={s.n === "01" ? -1.5 : s.n === "02" ? 0 : 1.5} className="h-full">
+                <article className="metal-panel group relative h-full overflow-hidden rounded-xl p-6 transition-all duration-300 hover:-translate-y-1 hover:border-metal/40">
+                  <span className="pointer-events-none absolute -top-3 right-3 font-mono text-[56px] font-black text-white/[0.045]">
+                    {s.n}
+                  </span>
+                  <s.icon className="mb-4 size-6 text-silver" aria-hidden />
+                  <h3 className="mb-2 font-mono text-[13px] font-black tracking-[0.24em] text-silver">
+                    {s.title}
+                  </h3>
+                  <p className="text-[13px] leading-relaxed text-muted-foreground">{s.body}</p>
+                </article>
+              </Reveal>
+            ))}
+          </div>
+        </section>
+
         {/* ---------------- features ---------------- */}
-        <section id="die-feite" className="grid gap-4 pb-20 sm:grid-cols-2 sm:pb-28">
+        <section id="die-feite" className="grid gap-4 pb-20 sm:grid-cols-2 sm:pb-24">
           {FEATURES.map((f) => (
             <Reveal key={f.title} from={f.side} rotate={f.rot} className="h-full">
               <article className="blood-panel group h-full rounded-xl p-5 transition-all duration-300 hover:-translate-y-1 hover:border-alert/45 hover:shadow-[0_16px_40px_rgba(0,0,0,0.6),0_0_28px_rgba(180,24,24,0.12)] sm:p-6">
@@ -318,7 +356,48 @@ export function Landing() {
           ))}
         </section>
 
-        {/* ---------------- specs marquee + chips ---------------- */}
+        {/* ---------------- WANTED teaser ---------------- */}
+        <Reveal from="up" className="pb-20 sm:pb-24">
+          <section className="relative overflow-hidden rounded-2xl border border-alert/25 bg-[linear-gradient(135deg,#170404_0%,#0d0d0d_55%,#1a0505_100%)] p-7 sm:p-10">
+            <ParallaxGhost
+              text="WANTED"
+              className="absolute -right-6 top-1/2 -translate-y-1/2 text-[22vw] text-white/[0.02] sm:text-[9rem]"
+            />
+            <div className="relative z-10 flex flex-col items-start gap-6 lg:flex-row lg:items-center">
+              <div className="flex-1">
+                <p className="mb-2 flex items-center gap-2 font-mono text-[10px] tracking-[0.3em] text-alert uppercase">
+                  <Skull className="size-4" /> Nuut · Encrypted
+                </p>
+                <h2 className="font-mono text-3xl font-black uppercase leading-[1.05] sm:text-4xl">
+                  <span className="metal-text">Die </span>
+                  <span className="blood-text">Wanted</span>
+                  <span className="metal-text"> bord</span>
+                </h2>
+                <p className="mt-3 max-w-lg text-[13.5px] leading-relaxed text-muted-foreground">
+                  Plak wanted-posters met foto's en video's — alias, misdaad,
+                  koopsom, status. Elke poster en elke media-lêer word met jou
+                  vault-sleutel verseël voordat dit gestoor word. Dis jou
+                  private dossier, boet — niemand anders sien dit nie.
+                </p>
+              </div>
+              <div className="wanted-mini-poster shrink-0 select-none text-center">
+                <p className="wanted-title font-mono text-[22px] font-black text-[#1a1210]">WANTED</p>
+                <Image
+                  src="/fastguns-logo.png"
+                  alt=""
+                  width={64}
+                  height={64}
+                  className="mx-auto my-2 opacity-80 mix-blend-multiply"
+                />
+                <p className="font-mono text-[7.5px] tracking-[0.26em] text-[#5a4a3a] uppercase">
+                  Alive or cached
+                </p>
+              </div>
+            </div>
+          </section>
+        </Reveal>
+
+        {/* ---------------- specs ---------------- */}
         <Marquee fast />
 
         <section className="py-16 text-center sm:py-20">
@@ -340,7 +419,7 @@ export function Landing() {
         </section>
 
         {/* ---------------- honesty ---------------- */}
-        <Reveal from="up" className="mb-20 sm:mb-28">
+        <Reveal from="up" className="mb-20 sm:mb-24">
           <section className="metal-panel-elevated rounded-xl p-5 sm:p-7">
             <h2 className="mb-3 font-mono text-[11px] font-bold tracking-[0.22em] text-silver uppercase">
               Wat ons <span className="text-alert">NIE</span> claim nie
@@ -356,7 +435,7 @@ export function Landing() {
         </Reveal>
 
         {/* ---------------- final CTA ---------------- */}
-        <section className="relative pb-20 text-center sm:pb-28">
+        <section className="relative pb-20 text-center sm:pb-24">
           <SlamText
             className="mx-auto max-w-3xl font-mono font-bold uppercase leading-[1.05]"
             lines={["GENOEG GEKAK", "PRAAT."]}
@@ -382,8 +461,8 @@ export function Landing() {
       </main>
 
       {/* ---------------- footer (sticky bottom) ---------------- */}
-      <footer className="relative z-10 mt-auto border-t border-border/70 bg-ink/80 px-5 py-5 pb-safe sm:px-8">
-        <div className="mx-auto flex max-w-4xl flex-col items-center justify-between gap-2 text-center sm:flex-row sm:text-left">
+      <footer className="relative z-10 mt-auto bg-ink/80 px-5 py-6 pb-safe sm:px-8">
+        <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-3 text-center sm:flex-row sm:text-left">
           <p className="font-mono text-[10px] tracking-[0.2em] text-metal uppercase">
             FAST GUNS · Privaat by argitektuur · Jou sleutels bly <span className="text-alert">JOU NE</span>
           </p>

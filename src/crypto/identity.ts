@@ -99,8 +99,24 @@ export async function fingerprintIdentity(
   return toBase32(bytes);
 }
 
-export async function createIdentity(name: string): Promise<Identity> {
+export type ForgeStage =
+  | "init"
+  | "keygen-ecdh"
+  | "keygen-ecdsa"
+  | "kdf"
+  | "seal"
+  | "unwrap"
+  | "fingerprint"
+  | "persist"
+  | "done";
+
+export async function createIdentity(
+  name: string,
+  onStage?: (stage: ForgeStage) => Promise<void> | void
+): Promise<Identity> {
+  await onStage?.("keygen-ecdh");
   const ecdh = await generateEcdhKeyPair();
+  await onStage?.("keygen-ecdsa");
   const ecdsa = await generateEcdsaKeyPair();
 
   const idEcdhPub = await exportPublicJwk(ecdh.publicKey);
@@ -108,6 +124,7 @@ export async function createIdentity(name: string): Promise<Identity> {
   const idEcdsaPub = await exportPublicJwk(ecdsa.publicKey);
   const idEcdsaPriv = await exportPrivateJwk(ecdsa.privateKey);
 
+  await onStage?.("fingerprint");
   const fingerprint = await fingerprintIdentity(idEcdhPub, idEcdsaPub);
 
   return {

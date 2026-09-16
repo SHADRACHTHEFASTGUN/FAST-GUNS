@@ -62,9 +62,9 @@ export function Unlock() {
           <Image
             src="/fastguns-logo.png"
             alt="FAST GUNS emblem"
-            width={120}
-            height={120}
-            className="rounded-xl border border-white/5"
+            width={150}
+            height={150}
+            className="select-none"
             priority
           />
         </div>

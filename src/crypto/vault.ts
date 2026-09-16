@@ -34,11 +34,16 @@ import {
 export const PBKDF2_ITERATIONS = 600_000;
 const VAULT_AAD = "fastguns-vault-v1";
 
-export async function createVaultRecord(password: string): Promise<VaultRecord> {
+export async function createVaultRecord(
+  password: string,
+  onStage?: (stage: "kdf" | "seal") => Promise<void> | void
+): Promise<VaultRecord> {
   const salt = randomBytes(32);
+  await onStage?.("kdf");
   const kek = await deriveAesKeyFromPassword(password, salt, PBKDF2_ITERATIONS);
   const dekRaw = randomBytes(32);
   try {
+    await onStage?.("seal");
     const { iv, ct } = await aesGcmEncrypt(kek, dekRaw, new TextEncoder().encode(VAULT_AAD));
     return {
       v: 1,

@@ -19,7 +19,7 @@ import type {
   SecurityEvent,
   VaultRecord,
 } from "@/types";
-import { createIdentity, sanitizeName } from "@/crypto/identity";
+import { createIdentity, sanitizeName, type ForgeStage } from "@/crypto/identity";
 import { createVaultRecord, unlockVaultRecord } from "@/crypto/vault";
 import { createBackupFile, openBackupFile, parseBackupJson, downloadJsonFile } from "@/crypto/backup";
 import { decryptFile } from "@/crypto/files";
@@ -48,7 +48,7 @@ const urlRegistry = new Map<string, string>();
 /* view model                                                          */
 /* ------------------------------------------------------------------ */
 
-export type Tab = "chats" | "contacts" | "security" | "settings";
+export type Tab = "chats" | "contacts" | "wanted" | "security" | "settings";
 
 export type OverlayName =
   | "chat"
@@ -92,7 +92,13 @@ export interface AppState {
   boot: () => Promise<void>;
   startOnboarding: () => void;
   cancelOnboarding: () => void;
-  createIdentityAndVault: (name: string, password: string) => Promise<void>;
+  /** leaves the onboarding flow after forge + backup steps are done */
+  completeOnboarding: () => void;
+  createIdentityAndVault: (
+    name: string,
+    password: string,
+    onStage?: (stage: ForgeStage) => Promise<void> | void
+  ) => Promise<void>;
   unlockVault: (password: string) => Promise<boolean>;
   lockVault: () => void;
   setTab: (tab: Tab) => void;
@@ -375,15 +381,18 @@ export const useAppStore = create<AppState>((set, get) => {
 
     startOnboarding: () => set({ phase: "onboarding" }),
     cancelOnboarding: () => set({ phase: "landing" }),
+    completeOnboarding: () => set({ phase: "app", tab: "chats", overlay: null }),
 
-    createIdentityAndVault: async (rawName, password) => {
+    createIdentityAndVault: async (rawName, password, onStage) => {
       const name = sanitizeName(rawName) || "Anonymous";
-      const identity = await createIdentity(name);
-      const record = await createVaultRecord(password);
+      const identity = await createIdentity(name, onStage);
+      const record = await createVaultRecord(password, onStage);
+      await onStage?.("unwrap");
       const unlocked = await unlockVaultRecord(password, record);
       if (!unlocked) throw new Error("vault-create-failed");
       privateRefs.dek = unlocked.dek;
       privateRefs.identity = identity;
+      await onStage?.("persist");
       await vaultStore.initStorage(unlocked.dek);
       await vaultStore.saveIdentity(identity);
       await vaultStore.saveVaultRecord(record);
@@ -392,7 +401,8 @@ export const useAppStore = create<AppState>((set, get) => {
       await vaultStore.appendSecurityEvent("vault-created", "Encrypted vault created on this device.");
       await vaultStore.appendSecurityEvent("identity-created", `Identity created: ${identity.fingerprint.slice(0, 10)}…`);
       set({
-        phase: "app",
+        // stay in "onboarding" — the forge terminal shows its DONE state and
+        // the user proceeds through the backup step, then completeOnboarding()
         vaultStatus: "unlocked",
         vaultMeta: {
           createdAt: record.createdAt,
@@ -401,9 +411,7 @@ export const useAppStore = create<AppState>((set, get) => {
         },
         identityPublic: publicOf(identity),
         settings,
-        tab: "chats",
-        // onboarding step 3: land on the encrypted backup screen first
-        overlay: { name: "backup" },
+        overlay: null,
       });
       await loadAllData(set);
     },

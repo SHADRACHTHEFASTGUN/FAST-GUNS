@@ -12,6 +12,7 @@ import type {
   SecurityEvent,
   SecurityEventKind,
   VaultRecord,
+  WantedPoster,
 } from "@/types";
 import { randomUuid } from "@/crypto/primitives";
 import {
@@ -230,4 +231,33 @@ export async function storageStats(): Promise<{ usage: number; quota: number; re
 export async function wipeAllLocalData(): Promise<void> {
   storage = null;
   await deleteDatabase();
+}
+
+/* ------------------------------------------------------------------ */
+/* WANTED board (posters sealed with DEK; media ciphertext separate)   */
+/* ------------------------------------------------------------------ */
+
+const WANTED_PREFIX = "wanted-";
+
+function wantedKey(id: string): string {
+  return `${WANTED_PREFIX}${id}`;
+}
+
+export async function putWantedPoster(poster: WantedPoster): Promise<void> {
+  await getStorage().put("kv", wantedKey(poster.id), poster);
+}
+
+export async function listWantedPosters(): Promise<WantedPoster[]> {
+  const posters = await getStorage().listByPrefix<WantedPoster>("kv", WANTED_PREFIX, 500, false);
+  return posters.sort((a, b) => b.createdAt - a.createdAt);
+}
+
+export async function deleteWantedPoster(id: string): Promise<void> {
+  const storage = getStorage();
+  const rec = await storage.get<WantedPoster>("kv", wantedKey(id));
+  await storage.delete("kv", wantedKey(id));
+  if (rec) {
+    if (rec.image) await storage.deleteAttachment(rec.image.id).catch(() => {});
+    if (rec.video) await storage.deleteAttachment(rec.video.id).catch(() => {});
+  }
 }

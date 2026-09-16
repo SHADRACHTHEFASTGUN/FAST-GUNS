@@ -11,10 +11,11 @@ import { Button } from "@/components/ui/button";
 import { useAppStore, type Tab } from "@/store/app-store";
 import { StatePill, Wordmark } from "@/components/common";
 import { cn } from "@/lib/utils";
-import { Lock, MessageSquareLock, Shield, Settings2, UsersRound } from "lucide-react";
+import { Crosshair, Lock, MessageSquareLock, Shield, Settings2, UsersRound } from "lucide-react";
 
 const TABS: { id: Tab; label: string; icon: typeof MessageSquareLock }[] = [
   { id: "chats", label: "Chats", icon: MessageSquareLock },
+  { id: "wanted", label: "Wanted", icon: Crosshair },
   { id: "contacts", label: "Contacts", icon: UsersRound },
   { id: "security", label: "Security", icon: Shield },
   { id: "settings", label: "Settings", icon: Settings2 },
@@ -121,7 +122,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </header>
 
         {/* content */}
-        <main className="mx-auto w-full max-w-2xl flex-1 px-4 pt-4 pb-28 lg:max-w-3xl lg:pb-8">
+        <main className="mx-auto w-full max-w-2xl flex-1 px-4 pt-4 pb-28 lg:max-w-4xl lg:pb-8">
           {children}
         </main>
 
@@ -130,7 +131,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           className="fixed inset-x-0 bottom-0 z-30 border-t border-border/70 bg-ink/95 backdrop-blur-md lg:hidden"
           aria-label="Primary"
         >
-          <ul className="mx-auto grid max-w-md grid-cols-4 px-2 pb-safe">
+          <ul className="mx-auto grid max-w-md grid-cols-5 px-1 pb-safe">
             {TABS.map((t) => {
               const active = tab === t.id;
               return (

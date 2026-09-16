@@ -2,22 +2,25 @@
 
 /**
  * FAST GUNS — onboarding.
- * Step 1 identity name → step 2 vault password → real key forging →
- * step 3 encrypted backup → enter the vault.
+ * Step 1 identity name → step 2 vault password → real key forging (hacker
+ * terminal wired to REAL crypto stage callbacks) → step 3 backup → vault.
+ *
+ * HONESTY: WebCrypto PBKDF2 runs as one atomic 600k-round call and exposes
+ * no intermediate progress. The terminal's iteration ticker and hex stream
+ * are visualisation only (hex = real CSPRNG output) and are labelled as such.
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAppStore } from "@/store/app-store";
 import { assessPasswordStrength } from "@/crypto/vault";
+import type { ForgeStage } from "@/crypto/identity";
 import {
   ConfirmDialog,
   FingerprintText,
-  Spinner,
-  StrengthMeter,
   VignetteBackdrop,
   Wordmark,
 } from "@/components/common";
@@ -29,13 +32,19 @@ type Step = 0 | 1 | 2 | 3;
 
 const STEP_TITLES = ["Identity", "Vault", "Forge", "Backup"];
 
+interface StageHit {
+  stage: ForgeStage;
+  at: number;
+}
+
 export function Onboarding() {
   const [step, setStep] = useState<Step>(0);
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [forging, setForging] = useState(false);
-  const [forgeStage, setForgeStage] = useState(0);
+  const [forgeDone, setForgeDone] = useState(false);
+  const [stageHits, setStageHits] = useState<StageHit[]>([]);
   const [backupDone, setBackupDone] = useState(false);
   const [backupPassword, setBackupPassword] = useState("");
   const [skipConfirm, setSkipConfirm] = useState(false);
@@ -43,28 +52,24 @@ export function Onboarding() {
   const createIdentityAndVault = useAppStore((s) => s.createIdentityAndVault);
   const exportBackup = useAppStore((s) => s.exportBackup);
   const cancelOnboarding = useAppStore((s) => s.cancelOnboarding);
+  const completeOnboarding = useAppStore((s) => s.completeOnboarding);
   const identityPublic = useAppStore((s) => s.identityPublic);
 
-  // trigger the real crypto work on the "forge" step
+  // trigger the real crypto work on the "forge" step — wired to REAL stages
   useEffect(() => {
     if (step !== 2 || !forging) return;
     let cancelled = false;
+    const t0 = performance.now();
     const run = async () => {
-      const stages = [
-        [260, 1],
-        [900, 2],
-        [1500, 3],
-      ] as const;
-      for (const [delay, s] of stages) {
-        await new Promise((r) => setTimeout(r, delay));
-        if (cancelled) return;
-        setForgeStage(s);
-      }
       try {
-        await createIdentityAndVault(name, password);
+        await createIdentityAndVault(name, password, (stage: ForgeStage) => {
+          if (!cancelled) {
+            setStageHits((prev) => [...prev, { stage, at: (performance.now() - t0) / 1000 }]);
+          }
+        });
         if (!cancelled) {
           setForging(false);
-          setStep(3);
+          setForgeDone(true);
         }
       } catch {
         if (!cancelled) {
@@ -77,7 +82,7 @@ export function Onboarding() {
     return () => {
       cancelled = true;
     };
-  }, [step, forging]);
+  }, [step, forging, name, password, createIdentityAndVault]);
 
   const pwStrength = assessPasswordStrength(password);
   const passwordsMatch = password.length > 0 && password === confirm;
@@ -86,8 +91,10 @@ export function Onboarding() {
   if (step === 2) {
     return (
       <ForgeScreen
-        stage={forgeStage}
+        stageHits={stageHits}
         fingerprint={identityPublic?.fingerprint ?? null}
+        done={forgeDone}
+        onContinue={() => setStep(3)}
       />
     );
   }
@@ -97,7 +104,7 @@ export function Onboarding() {
       <VignetteBackdrop />
       <header className="relative z-10 flex items-center justify-between px-5 pt-safe sm:px-8">
         <div className="flex items-center gap-3 py-4">
-          <Image src="/fastguns-logo.png" alt="FAST GUNS emblem" width={30} height={30} className="rounded-md" />
+          <Image src="/fastguns-logo.png" alt="FAST GUNS emblem" width={34} height={34} className="select-none" />
           <Wordmark />
         </div>
         <button
@@ -217,7 +224,7 @@ export function Onboarding() {
               size="lg"
               disabled={!canForge}
               onClick={() => {
-                setForgeStage(0);
+                setStageHits([{ stage: "init", at: 0 }]);
                 setForging(true);
                 setStep(2);
               }}
@@ -295,18 +302,21 @@ export function Onboarding() {
         title="Skip backup?"
         description="Without a backup, clearing this browser's storage deletes your identity and every conversation permanently. This cannot be undone by anyone."
         confirmLabel="Skip anyway"
-        onConfirm={() => setSkipConfirm(false)}
+        onConfirm={() => {
+          setSkipConfirm(false);
+          completeOnboarding();
+        }}
       />
     </div>
   );
 }
 
 function EnterButton() {
-  const setTab = useAppStore((s) => s.setTab);
+  const completeOnboarding = useAppStore((s) => s.completeOnboarding);
   return (
     <Button
       size="lg"
-      onClick={() => setTab("chats")}
+      onClick={completeOnboarding}
       className="h-12 min-w-40 rounded-xl font-mono text-[12px] tracking-[0.2em] uppercase"
     >
       Enter vault <ArrowRight className="size-4" />
@@ -344,44 +354,329 @@ function StepHeading({
   );
 }
 
-function ForgeScreen({ stage, fingerprint }: { stage: number; fingerprint: string | null }) {
-  const lines = [
-    "Generating identity keys (ECDH P-256 · ECDSA P-256)…",
-    "Deriving vault key — PBKDF2-SHA256 × 600,000…",
-    "Sealing vault envelope (AES-256-GCM)…",
-    "Writing encrypted records…",
-  ];
+function StrengthMeter({ score }: { score: number }) {
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center bg-ink px-6 grain">
+    <div className="flex gap-1" aria-hidden>
+      {[0, 1, 2, 3].map((i) => (
+        <span
+          key={i}
+          className={cn(
+            "h-1 flex-1 rounded-full",
+            i < score ? (score >= 3 ? "bg-silver" : "bg-metal") : "bg-charcoal"
+          )}
+        />
+      ))}
+    </div>
+  );
+}
+
+/* ================================================================== */
+/* FORGE TERMINAL — hacker-style, wired to REAL crypto stage callbacks */
+/* ================================================================== */
+
+const STAGE_ORDER: { stage: ForgeStage; cmd: string; desc: string }[] = [
+  { stage: "keygen-ecdh", cmd: "gen --curve P-256 --use ECDH", desc: "ECDH keypair" },
+  { stage: "keygen-ecdsa", cmd: "gen --curve P-256 --use ECDSA", desc: "signing keypair" },
+  { stage: "fingerprint", cmd: "hash SHA-256 → base32", desc: "identity fingerprint" },
+  { stage: "kdf", cmd: "kdf PBKDF2-SHA256 --rounds 600000", desc: "vault KEK derivation" },
+  { stage: "seal", cmd: "seal AES-256-GCM --aad fastguns-vault-v1", desc: "wrap vault DEK" },
+  { stage: "unwrap", cmd: "verify --roundtrip DEK", desc: "key unwrap proof" },
+  { stage: "persist", cmd: "write → IndexedDB (sealed)", desc: "encrypted records" },
+];
+
+function ForgeScreen({
+  stageHits,
+  fingerprint,
+  done,
+  onContinue,
+}: {
+  stageHits: StageHit[];
+  fingerprint: string | null;
+  done: boolean;
+  onContinue: () => void;
+}) {
+  const kdfIdx = STAGE_ORDER.findIndex((s) => s.stage === "kdf");
+  const kdfRunning =
+    stageHits.some((h) => h.stage === "kdf") && !stageHits.some((h) => h.stage === "seal");
+  const stageIdxFor = (stage: ForgeStage) =>
+    stageHits.reduce((acc, h, i) => (h.stage === stage ? i : acc), -1);
+
+  return (
+    <div className="relative flex min-h-screen flex-col bg-ink grain">
       <VignetteBackdrop />
-      <div className="relative z-10 flex flex-col items-center text-center">
-        <div className="spin-slow mb-8">
-          <Image src="/fastguns-logo.png" alt="" width={96} height={96} className="rounded-xl opacity-90" priority />
-        </div>
-        <h1 className="font-mono text-[13px] font-semibold tracking-[0.3em] text-silver uppercase">
-          Forging identity
-        </h1>
-        <ul className="mt-6 space-y-2.5 text-left">
-          {lines.map((line, i) => (
-            <li key={line} className="flex items-center gap-2.5 font-mono text-[11px] text-muted-foreground">
-              {i < stage ? (
-                <Check className="size-3.5 text-silver" />
-              ) : i === stage ? (
-                <Spinner className="size-3.5" />
-              ) : (
-                <span className="size-3.5 rounded-full border border-charcoal" />
-              )}
-              <span className={cn(i <= stage && "text-silver")}>{line}</span>
-            </li>
-          ))}
-        </ul>
-        {fingerprint ? (
-          <div className="mt-8">
-            <p className="mb-1 font-mono text-[9px] tracking-[0.24em] text-metal uppercase">Identity fingerprint</p>
-            <FingerprintText fp={fingerprint} />
+
+      <main className="relative z-10 mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center px-4 py-8 sm:px-6">
+        {/* terminal window */}
+        <div className="metal-panel-elevated overflow-hidden rounded-xl border border-border/80 font-mono shadow-[0_30px_80px_rgba(0,0,0,0.7)]">
+          {/* title bar */}
+          <div className="flex items-center justify-between border-b border-border/70 bg-[#0b0b0b] px-4 py-2.5">
+            <div className="flex items-center gap-2">
+              <span className="size-2.5 rounded-full bg-alert hard-blink" aria-hidden />
+              <span className="text-[10px] tracking-[0.24em] text-silver uppercase">
+                fastguns://secure-forge
+              </span>
+            </div>
+            <span className="text-[9px] tracking-[0.2em] text-metal uppercase">
+              ECDH·P-256 / ECDSA·P-256 / AES-256-GCM
+            </span>
           </div>
-        ) : null}
+
+          <div className="grid gap-0 lg:grid-cols-[1.5fr_1fr]">
+            {/* log stream */}
+            <div className="border-border/70 p-4 sm:p-5 lg:border-r">
+              <p className="mb-3 text-[10px] tracking-[0.2em] text-metal uppercase">
+                root@fastguns:~$ ./forge --identity --vault
+              </p>
+              <ol className="space-y-2">
+                <LogLine
+                  label="init"
+                  detail="WebCrypto secure context verified"
+                  state={stageHits.length > 0 ? "done" : "running"}
+                  at={0}
+                />
+                {STAGE_ORDER.map((s) => {
+                  const hitIdx = stageIdxFor(s.stage);
+                  const state: "pending" | "running" | "done" =
+                    hitIdx >= 0
+                      ? s.stage === "persist" && !done
+                        ? "running"
+                        : "done"
+                      : stageHits.length > 0 && kdfIdx >= 0
+                        ? pendingState(stageHits, STAGE_ORDER, s.stage)
+                        : "pending";
+                  return (
+                    <LogLine
+                      key={s.stage}
+                      label={s.cmd}
+                      detail={s.desc}
+                      state={state}
+                      at={hitIdx >= 0 ? stageHits[hitIdx].at : null}
+                    />
+                  );
+                })}
+              </ol>
+
+              {done && fingerprint ? (
+                <div className="mt-4 rounded-lg border border-silver/20 bg-surface p-3">
+                  <p className="text-[9px] tracking-[0.24em] text-metal uppercase">
+                    Identity forged — fingerprint
+                  </p>
+                  <div className="mt-1">
+                    <FingerprintText fp={fingerprint} />
+                  </div>
+                </div>
+              ) : null}
+            </div>
+
+            {/* entropy panel */}
+            <div className="flex flex-col gap-4 border-t border-border/70 bg-[#0a0a0a] p-4 sm:p-5 lg:border-t-0">
+              <EntropyPanel active={stageHits.length > 0} />
+              {kdfRunning ? <KdfTicker /> : null}
+            </div>
+          </div>
+
+          {/* progress + honest note */}
+          <div className="border-t border-border/70 px-4 py-3 sm:px-5">
+            <div className="flex gap-1.5" aria-hidden>
+              {STAGE_ORDER.map((s, i) => {
+                const hit = stageIdxFor(s.stage) >= 0;
+                return (
+                  <span
+                    key={s.stage}
+                    className={cn(
+                      "h-1 flex-1 rounded-full transition-colors duration-300",
+                      hit ? (i === STAGE_ORDER.length - 1 && !done ? "bg-silver/60" : "bg-silver") : "bg-charcoal"
+                    )}
+                  />
+                );
+              })}
+            </div>
+            <p className="mt-2.5 text-[9.5px] leading-relaxed text-muted-foreground">
+              HONESTY: WebCrypto PBKDF2 is one atomic 600 000-round call — it exposes no true
+              intermediate progress. The ticker below-left is a UI estimate and the hex stream
+              is real CSPRNG output (visual). Nothing here is faked as crypto.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-6 flex flex-col items-center gap-4">
+          {done ? (
+            <Button
+              size="lg"
+              onClick={onContinue}
+              className="h-12 min-w-56 rounded-xl bg-alert font-mono text-[12px] font-bold tracking-[0.2em] text-white uppercase hover:bg-[#a51515]"
+            >
+              Continue → backup <ArrowRight className="ml-1 size-4" />
+            </Button>
+          ) : null}
+          <Image
+            src="/fastguns-logo.png"
+            alt=""
+            width={72}
+            height={72}
+            className={cn("select-none drop-shadow-[0_16px_36px_rgba(0,0,0,0.85)]", !done && "spin-slow opacity-80")}
+          />
+        </div>
+      </main>
+    </div>
+  );
+}
+
+function pendingState(
+  hits: StageHit[],
+  order: { stage: ForgeStage }[],
+  stage: ForgeStage
+): "pending" | "running" {
+  // a stage is "running" if the previous stage just completed and it's next
+  const completed = new Set(hits.map((h) => h.stage));
+  const idx = order.findIndex((s) => s.stage === stage);
+  if (idx > 0 && completed.has(order[idx - 1].stage) && !completed.has(stage)) return "running";
+  if (idx === 0 && completed.size > 0 && !completed.has(stage)) return "running";
+  return "pending";
+}
+
+function LogLine({
+  label,
+  detail,
+  state,
+  at,
+}: {
+  label: string;
+  detail: string;
+  state: "pending" | "running" | "done";
+  at: number | null;
+}) {
+  return (
+    <li className="flex items-baseline gap-2 text-[11px] leading-relaxed sm:text-[11.5px]">
+      <span className="w-14 shrink-0 text-right text-[9px] text-metal tabular">
+        {at !== null ? `t+${at.toFixed(2)}s` : "t+ ····"}
+      </span>
+      <span className="shrink-0">
+        {state === "done" ? (
+          <Check className="size-3.5 translate-y-0.5 text-silver" aria-label="pass" />
+        ) : state === "running" ? (
+          <span className="inline-block size-3.5 translate-y-0.5 animate-pulse rounded-full border border-silver" aria-label="running" />
+        ) : (
+          <span className="inline-block size-3.5 translate-y-0.5 rounded-full border border-charcoal" aria-label="pending" />
+        )}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className={cn("break-all", state === "pending" ? "text-muted-foreground/50" : "text-silver")}>
+          [{label}]
+        </span>{" "}
+        <span className={cn("text-muted-foreground", state === "pending" && "opacity-50")}>
+          — {detail}
+        </span>
+        {state === "done" ? <span className="text-[10px] tracking-[0.18em] text-silver"> OK</span> : null}
+      </span>
+    </li>
+  );
+}
+
+/** Live hex stream — REAL crypto.getRandomValues output, visual only. */
+function HexStream({ active }: { active: boolean }) {
+  const [lines, setLines] = useState<string[]>([]);
+  useEffect(() => {
+    if (!active) return;
+    const push = () => {
+      const bytes = new Uint8Array(10);
+      crypto.getRandomValues(bytes);
+      const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join(" ");
+      setLines((prev) => [hex, ...prev].slice(0, 9));
+    };
+    push();
+    const t = setInterval(push, 130);
+    return () => clearInterval(t);
+  }, [active]);
+
+  return (
+    <div className="space-y-0.5 text-[9.5px] leading-relaxed text-silver/80">
+      {lines.length === 0 ? <span className="text-metal">awaiting entropy…</span> : null}
+      {lines.map((l, i) => (
+        <p key={`${i}-${l}`} style={{ opacity: 1 - i * 0.09 }}>
+          {l}
+        </p>
+      ))}
+    </div>
+  );
+}
+
+/** Entropy sparkline — real CSPRNG samples rendered as bars. */
+function Sparkline({ active }: { active: boolean }) {
+  const [bars, setBars] = useState<number[]>(() => Array.from({ length: 28 }, () => 0.1));
+  useEffect(() => {
+    if (!active) return;
+    const t = setInterval(() => {
+      const bytes = new Uint8Array(28);
+      crypto.getRandomValues(bytes);
+      setBars(Array.from(bytes, (b) => 0.15 + (b / 255) * 0.85));
+    }, 120);
+    return () => clearInterval(t);
+  }, [active]);
+  return (
+    <div className="flex h-10 items-end gap-[3px]" aria-hidden>
+      {bars.map((b, i) => (
+        <span
+          key={i}
+          className="flex-1 rounded-t-sm bg-silver/70 transition-[height] duration-100"
+          style={{ height: `${b * 100}%` }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function EntropyPanel({ active }: { active: boolean }) {
+  return (
+    <div>
+      <div className="mb-2 flex items-center justify-between">
+        <p className="text-[9px] tracking-[0.24em] text-metal uppercase">CSPRNG pool · live</p>
+        {active ? <span className="size-1.5 animate-pulse rounded-full bg-alert" /> : null}
       </div>
+      <Sparkline active={active} />
+      <div className="mt-3">
+        <HexStream active={active} />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Iteration ticker for the PBKDF2 stage. HONEST: this is a UI estimate —
+ * WebCrypto gives no progress events. It eases toward 600 000 and snaps to
+ * VERIFIED when the stage completes.
+ */
+function KdfTicker() {
+  const target = 600_000;
+  const [shown, setShown] = useState(0);
+  const start = useRef<number>(0);
+  useEffect(() => {
+    start.current = performance.now();
+    let raf = 0;
+    const ease = () => {
+      const elapsed = (performance.now() - start.current) / 1000;
+      // ease toward target assuming ~2.5s derivation; never quite reaches it
+      const estimate = Math.min(target * 0.97, (elapsed / 2.5) * target);
+      setShown(Math.floor(estimate));
+      raf = requestAnimationFrame(ease);
+    };
+    raf = requestAnimationFrame(ease);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+  const pct = ((shown / target) * 100).toFixed(1);
+  return (
+    <div className="rounded-lg border border-silver/15 bg-surface p-3">
+      <div className="flex items-baseline justify-between">
+        <p className="text-[9px] tracking-[0.24em] text-metal uppercase">PBKDF2 rounds</p>
+        <p className="text-[11px] text-silver tabular">{pct}%</p>
+      </div>
+      <p className="mt-1 text-[19px] font-bold text-silver tabular">
+        {shown.toLocaleString("en-US")}
+        <span className="ml-1 text-[10px] text-metal">/ 600 000</span>
+      </p>
+      <p className="mt-1 text-[8.5px] leading-relaxed text-muted-foreground">
+        UI estimate — WebCrypto exposes no real progress for this call.
+      </p>
     </div>
   );
 }
