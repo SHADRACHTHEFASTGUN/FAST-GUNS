@@ -59,3 +59,24 @@ Bugs found & fixed during verification:
 Stage Summary:
 - End-to-end verified: two independent browser sessions created identities, found each other through the ephemeral relay, established a real AES-256-GCM secure channel over WebRTC, exchanged encrypted text + files, persisted ciphertext locally, and restored everything after reload + unlock. All security states shown in the UI are real.
 - lint ✓, tsc ✓, dev.log clean, signaling relay healthy on :3003.
+
+---
+Task ID: 13
+Agent: main
+Task: VIOLENT EDITION — 100x better look, transparent logo, GSAP animations, vulgar Afrikaans/Coloured slang, invisible scrollbars, mobile polish, GitHub push
+
+Work Log:
+- Logo surgery (scripts/strip-logo-bg.mjs): edge-connected flood-fill stripped the black background from FAST.png (soft alpha on boundary ring, interior blacks in guns/chains preserved), trimmed + squared to 1024px transparent PNG; regenerated icon set (16/32/48 transparent favicons; 180/192/512 black-backed for apple/maskable).
+- Added gsap@3.15.0. New src/components/fx.tsx FX arsenal: HeroEmblem (logo slams in with screen shake + red muzzle flash), SlamText (ScrollTrigger slam lines with recoil), Reveal (directional fly-in w/ rotation + stagger), ParallaxGhost (scrubbed watermark), usePunch (click recoil). All respect prefers-reduced-motion.
+- globals.css: ALL scrollbars hidden globally (html/body/*, Firefox + WebKit) while scrolling stays functional; VIOLENT EDITION utilities (blood-text, blood-panel, blood-glow, alert-flicker, marquee tracks, muzzle-flash, hard-blink, 44px touch targets); --alert pushed to #c81e1e.
+- landing.tsx rebuilt: huge transparent emblem hero (min(76vw,340px) mobile / min(52vw,420px) desktop), per-letter slammed FAST GUNS title, blood tagline "MOER DIE SPYWARE.", aggressive Afrikaans/Coloured-slang copy throughout (fokken/moer/kak/poephool/sloerie/boet/ne/jou ne), dual marquee strips, manifesto slam section over parallax "187" ghost, 4 blood-panel feature cards flying in alternating directions, honest-spec chips (AES-256-GCM, ECDH P-256, PBKDF2 600k), "WAT ONS NIE CLAIM NIE" honesty panel, "GENOEG GEKAK PRAAT." CTA with blood-glow button. Sticky footer kept (mt-auto).
+- shell.tsx: mobile top-bar logo 28→38px transparent w/ drop shadow, sidebar logo 44px + red "Moer die spyware" tagline, bottom-nav backdrop-blur-md.
+- layout.tsx: aggressive SEO/OG description in Afrikaans slang.
+- BUG FIX: dev server served stale globals.css (Turbopack persistent cache in .next) — new utilities missing from served chunk; killed server, rm -rf .next, restart → CSS correct.
+- Verification (agent-browser): desktop 1440x900 — hero slam renders, blood-text computes correctly, manifesto/features/specs/honesty/CTA/footer all fire via ScrollTrigger, no console errors; CTA click → GSAP punch → onboarding opens; full onboarding (PBKDF2 600k) + backup download + lock/unlock round-trip passes. Mobile 390x844 — hero, stacked blood cards, marquee, full-width CTA, shell bottom nav all verified; scrollbar-width:none confirmed on html/body.
+- GitHub: committed (16 files) and pushed to https://github.com/SHADRACHTHEFASTGUN/FAST-GUNS (repo created via API; token used inline only, NOT stored in .git/config; runtime data gitignored).
+
+Stage Summary:
+- Site is the VIOLENT EDITION: transparent emblem everywhere, GSAP-driven violent motion, zero visible scrollbars, mobile-first polish, fully Afrikaans/Coloured-slang aggressive copy while security claims stay honest.
+- Live on GitHub: SHADRACHTHEFASTGUN/FAST-GUNS @ 1581a0b.
+- NOTE: user's PAT was pasted in chat — recommend revoking/rotating it.
